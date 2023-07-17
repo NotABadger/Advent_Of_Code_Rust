@@ -7,10 +7,18 @@ pub struct ElfBox {
 }
 
 impl ElfBox {
-    pub fn elf_box_from_string(sizes : &str) -> ElfBox
+    pub fn elf_box_from_string(sizes : &str) -> Result<ElfBox, &'static String>
     {
         let dimentions_str : String= sizes.trim().to_string();
+        if String.is_empty()
+        {
+            return Error("No data to parse");
+        }
         let dimentions_list : Vec<&str> = dimentions_str.rsplit('x').collect();
+        if dimentions_list.len() != 3
+        {
+            return Error("Splitting on X failed in string parsing");
+        }
         let my_box = ElfBox {
             height : dimentions_list[0].parse().expect("Length parse failed"),
             width : dimentions_list[1].parse().expect("Width parse failed"),
@@ -19,7 +27,7 @@ impl ElfBox {
             smallest_area : 0,
         };
         //split at the 'x's' 
-        return my_box;
+        return Ok(my_box);
     }
 
     pub fn calculate_areas(&mut self)
