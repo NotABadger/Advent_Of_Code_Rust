@@ -14,7 +14,7 @@ fn main() {
    let mut feet_of_paper_needed: u32 = 0;
    let mut feet_of_ribbon_needed: u32 = 0;
 
-    println!("Program parameters");
+    //println!("Program parameters");
     // let args: Vec<String> = env::args().collect();
     // for arg in args
     // {
@@ -30,7 +30,10 @@ fn main() {
 
     for line in file_content.lines()
     {
-        boxes.push(ElfBox::elf_box_from_string(line));
+         match ElfBox::elf_box_from_string(line){
+            Ok(box) => boxes.push(box),
+            Error(err) => println!("Parsing box failed, msg{:?}", err),
+         }
     }
 
     for mut individual_box in boxes
