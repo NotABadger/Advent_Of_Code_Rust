@@ -6,7 +6,7 @@ mod elf_box;
 use crate::file_processor::FileProcessor; //imports object type
 use crate::elf_box::ElfBox;
 
-use std::env;
+//use std::env;
 
 fn main() {
    const FILE_PATH: &str = "input.txt";
@@ -15,11 +15,11 @@ fn main() {
    let mut feet_of_ribbon_needed: u32 = 0;
 
     //println!("Program parameters");
-    let args: Vec<String> = env::args().collect();
-    for arg in args
-    {
-        //println!("{:?}", arg);
-    }
+    // let args: Vec<String> = env::args().collect();
+    // for arg in args
+    // {
+    //     println!("{:?}", arg);
+    // }
 
     if !FileProcessor::check_file_exists(FILE_PATH)
     {
@@ -31,8 +31,8 @@ fn main() {
     for line in file_content.lines()
     {
          match ElfBox::elf_box_from_string(line){
-            Ok(box) => boxes.push(box),
-            Error(err) => println!("Parsing box failed, msg{:?}", err),
+            Ok(elf_box) => boxes.push(elf_box),
+            Err(err) => println!("Parsing box failed, msg{:?}", err),
          }
     }
 

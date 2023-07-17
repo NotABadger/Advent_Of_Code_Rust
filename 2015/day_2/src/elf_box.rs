@@ -65,19 +65,16 @@ impl ElfBox {
         if self.length >= self.width && self.length >= self.height
         {
             //use width & height
-            println!("Length was bigest!");
-            feet_of_ribbon = (2*self.width) + (2*self.height;)
+            feet_of_ribbon = (2*self.width) + (2*self.height);
         }
         else if self.width >= self.length && self.width >= self.height
         {
             //use height & length
-            println!("Width was bigest!");
             feet_of_ribbon = (2*self.height) + (2*self.length);
         }
         else
         {
             //use width & length
-            println!("Height was bigest!");
             feet_of_ribbon = (2*self.width) + (2*self.length);
         }
         let cubic_feet: u32= self.height * self.width * self.length;
