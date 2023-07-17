@@ -15,11 +15,11 @@ fn main() {
    let mut feet_of_ribbon_needed: u32 = 0;
 
     //println!("Program parameters");
-    // let args: Vec<String> = env::args().collect();
-    // for arg in args
-    // {
-    //     println!("{:?}", arg);
-    // }
+    let args: Vec<String> = env::args().collect();
+    for arg in args
+    {
+        //println!("{:?}", arg);
+    }
 
     if !FileProcessor::check_file_exists(FILE_PATH)
     {
