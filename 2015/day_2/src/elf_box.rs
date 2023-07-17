@@ -7,17 +7,17 @@ pub struct ElfBox {
 }
 
 impl ElfBox {
-    pub fn elf_box_from_string(sizes : &str) -> Result<ElfBox, &'static String>
+    pub fn elf_box_from_string(sizes : &str) -> Result<ElfBox, String>
     {
         let dimentions_str : String= sizes.trim().to_string();
-        if String.is_empty()
+        if dimentions_str.is_empty()
         {
-            return Error("No data to parse");
+            return Err("No data to parse".to_string());
         }
         let dimentions_list : Vec<&str> = dimentions_str.rsplit('x').collect();
         if dimentions_list.len() != 3
         {
-            return Error("Splitting on X failed in string parsing");
+            return Err("Splitting on X failed in string parsing".to_string());
         }
         let my_box = ElfBox {
             height : dimentions_list[0].parse().expect("Length parse failed"),
@@ -62,16 +62,13 @@ impl ElfBox {
     pub fn calculate_feet_of_ribbon_required(&self) -> u32
     {
         let mut feet_of_ribbon: u32 = 0;
-        println!("Length of package: {:?}", &self.length);
-        println!("Width of package: {:?}", &self.width);
-        println!("Height of package: {:?}", &self.height);
-        if self.length > self.width && self.length > self.height
+        if self.length >= self.width && self.length >= self.height
         {
             //use width & height
             println!("Length was bigest!");
             feet_of_ribbon = (2*self.width) + (2*self.height;)
         }
-        else if self.width > self.length && self.width > self.height
+        else if self.width >= self.length && self.width >= self.height
         {
             //use height & length
             println!("Width was bigest!");
@@ -85,8 +82,6 @@ impl ElfBox {
         }
         let cubic_feet: u32= self.height * self.width * self.length;
         feet_of_ribbon += cubic_feet;
-
-        println!("Total length in ribbon: {:?}", feet_of_ribbon);
 
         return feet_of_ribbon;
     }
