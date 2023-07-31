@@ -1,8 +1,11 @@
-pub mod file_processor{
 
-    use std::fs; //File System
-    use std::path::Path;
+pub struct FileProcessor{}
 
+use std::fs; //File System
+use std::path::Path;
+
+impl FileProcessor
+{
     pub fn read_file(file_path : &str) -> Result<String, &'static str>
     {
         let file_read_result = fs::read_to_string(file_path);
