@@ -27,6 +27,15 @@ impl Component for AndGate
         self.output = wire.to_string();
     }
 
+    fn validate_component(&self) -> bool
+    {
+        if self.input.len() > 1 && !self.output.is_empty()
+        {
+            return true;
+        }
+        false
+    }
+
     fn compute_value(&mut self, wire_list: &mut Vec<Wire>) 
     {
         let mut value: u16 = 0;

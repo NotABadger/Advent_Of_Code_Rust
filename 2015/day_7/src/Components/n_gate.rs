@@ -7,6 +7,14 @@ pub struct NGate
     output : String,
 }
 
+impl NGate
+{
+    pub fn new() -> Self
+    {
+        Self{input: String::new(), output: String::new()}
+    }
+}
+
 impl Component for NGate
 {
     fn add_input(&mut self, wire: &str)
@@ -17,6 +25,15 @@ impl Component for NGate
     fn add_output(&mut self, wire: &str)
     {
         self.output = wire.to_string();
+    }
+
+    fn validate_component(&self) -> bool
+    {
+        if !self.input.is_empty() && !self.output.is_empty()
+        {
+            return true;
+        }
+        false
     }
 
     fn compute_value(&mut self, wire_list: &mut Vec<Wire>)

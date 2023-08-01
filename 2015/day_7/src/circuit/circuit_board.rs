@@ -35,4 +35,27 @@ impl CircuitBoard
         }
         false
     }
+
+    pub fn add_wire(&mut self, wire: Wire)
+    {
+        self.connections.push(wire);
+    }
+
+    pub fn find_wire(&mut self, wire_name: &str) -> Option<&mut Wire>
+    {
+        for wire in &mut self.connections
+        {
+            if wire.get_name() == wire_name
+            {
+                return Some(wire);
+            }
+        }
+        None
+    }
+
+    pub fn add_component(&mut self, component: Box<dyn Component>)
+    {
+        self.components.push(component);
+    }
+
 }

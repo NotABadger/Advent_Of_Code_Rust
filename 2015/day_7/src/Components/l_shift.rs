@@ -10,9 +10,14 @@ pub struct LShift
 
 impl LShift
 {
-    fn new(operation : u32) -> Self
+    pub fn new() -> Self
     {
-        Self{input: String::new(), output: String::new(), operation}
+        Self{input: String::new(), output: String::new(), operation: 0}
+    }
+
+    pub fn set_offset(&mut self, offset: u32)
+    {
+        self.operation = offset;
     }
 }
 
@@ -26,6 +31,15 @@ impl Component for LShift
     fn add_output(&mut self, wire: &str)
     {
         self.output = wire.to_string();
+    }
+
+    fn validate_component(&self) -> bool
+    {
+        if !self.input.is_empty() && !self.output.is_empty()
+        {
+            return true;
+        }
+        false
     }
 
     fn compute_value(&mut self, wire_list: &mut Vec<Wire>)
