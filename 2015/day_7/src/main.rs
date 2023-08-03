@@ -6,8 +6,9 @@ mod circuit;
 
 
 use crate::file_processor_file::FileProcessor;
-use crate::components::{*};
 use crate::circuit::circuit_factory::CircuitFactory;
+use crate::circuit::circuit_board::CircuitBoard;
+use crate::circuit::circuit_resolver::CircuitResolver;
 
 fn main() {
     const INPUT: &str = "input.txt";
@@ -26,7 +27,9 @@ fn main() {
             panic!();
         }
     }
-
-    let mut factory : CircuitFactory = CircuitFactory::new();
-    factory.create_circuit_from_file(&file_content);
+    let mut complete_board: CircuitBoard = CircuitFactory::create_circuit_from_file(&file_content);
+    println!("The circuit contained {:?} wires and {:?} components", complete_board.get_mut_connections().len(), complete_board.get_mut_connections().len());
+    
+    let final_answer : u16 = CircuitResolver::resolve_circuit(&mut complete_board, "a");
+    println!("The value of wire \"a\" is: {:?}", final_answer);
 }

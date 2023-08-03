@@ -15,12 +15,22 @@ impl AndGate
     }
 }
 
-impl Component for AndGate
+impl<'a> Component<'a>  for AndGate
 {
     fn add_input(&mut self, wire: &str)
     {
         self.input.push(wire.to_string());
     }
+
+    fn get_input(&self) -> Vec<&'a str>
+    {
+        let mut return_vec : Vec<&str> = vec![];
+        for wire_id in &self.input
+        {
+            return_vec.push(wire_id);
+        }
+        return_vec
+    }   
 
     fn add_output(&mut self,  wire: &str) 
     {

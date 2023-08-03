@@ -14,12 +14,12 @@ impl CircuitBoard
         Self{connections: Vec::new(), components: Vec::new()}
     }
 
-    pub fn get_mut_connections(&mut self) -> &Vec<Wire>
+    pub fn get_mut_connections(&mut self) -> &mut Vec<Wire>
     {
         return &mut self.connections;
     }
 
-    pub fn get_mut_components(&mut self) -> &Vec<Box<dyn Component>>
+    pub fn get_mut_components(&mut self) -> &mut Vec<Box<dyn Component>>
     {
         return &mut self.components;
     }

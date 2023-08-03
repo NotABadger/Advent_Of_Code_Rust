@@ -16,11 +16,16 @@ impl WireConnect
     }
 }
 
-impl Component for WireConnect
+impl<'a> Component<'a> for WireConnect
 {
     fn add_input(&mut self, wire: &str)
     {
         self.input = wire.to_string();
+    }
+
+    fn get_input(&self) -> Vec<&'a str>
+    {
+        vec![&self.input]
     }
 
     fn add_output(&mut self, wire: &str)
