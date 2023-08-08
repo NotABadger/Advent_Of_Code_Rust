@@ -1,13 +1,13 @@
 use crate::component_traits::Component;
 use crate::wire::Wire;
 
-pub struct CircuitBoard
+pub struct CircuitBoard<'a>
 {
     connections : Vec<Wire>,
     components : Vec<Box<dyn Component>>
 }
 
-impl CircuitBoard
+impl CircuitBoard<'_>
 {
     pub fn new() -> Self
     {
@@ -56,6 +56,18 @@ impl CircuitBoard
     pub fn add_component(&mut self, component: Box<dyn Component>)
     {
         self.components.push(component);
+    }
+
+    pub fn find_component_on_output(&mut self, comp_output_name: &str) -> Option<&Box<dyn Component>>
+    {
+        for component in &mut self.components
+        {
+            if component.get_output() == comp_output_name
+            {
+                return Some(component);
+            }
+        }
+        None
     }
 
 }

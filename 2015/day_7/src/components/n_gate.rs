@@ -22,11 +22,21 @@ impl Component for NGate
         self.input = wire.to_string();
     }
 
+    fn get_input(&self) -> Vec<String>
+    {
+        vec![&self.input.to_string()]
+    }   
+
     fn add_output(&mut self, wire: &str)
     {
         self.output = wire.to_string();
     }
 
+    fn get_output(&self) -> String
+    {
+        &self.output.to_string()
+    }
+    
     fn validate_component(&self) -> bool
     {
         if !self.input.is_empty() && !self.output.is_empty()

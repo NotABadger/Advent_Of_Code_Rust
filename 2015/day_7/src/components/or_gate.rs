@@ -22,9 +22,24 @@ impl Component for OrGate
         self.input.push(wire.to_string());
     }
 
+    fn get_input(&self) -> Vec<String>
+    {
+        let mut return_vec : Vec<String> = vec![];
+        for wire_id in &self.input
+        {
+            return_vec.push(wire_id.to_string());
+        }
+        return_vec
+    }   
+
     fn add_output(&mut self, wire: &str)
     {
         self.output = wire.to_string();
+    }
+
+    fn get_output(&self) -> String
+    {
+        &self.output.to_string()
     }
 
     fn validate_component(&self) -> bool
