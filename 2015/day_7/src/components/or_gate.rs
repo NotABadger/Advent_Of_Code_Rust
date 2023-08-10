@@ -1,82 +1,50 @@
-use crate::component_traits::Component;
-use crate::wire::Wire;
+use std::cell::RefCell;
+use std::rc::Rc;
 
+use crate::component_traits::Component;
+
+#[derive(Clone)]
 pub struct OrGate
 {
-    input : Vec<String>,
-    output : String,
+    input : Vec<Rc<RefCell<dyn Component>>>,
+    value : Option<u16>,
 }
 
 impl OrGate
 {
     pub fn new() -> Self
     {
-        Self{input : vec![], output : String::new()}
+        Self{input : vec![], value : None}
     }
 }
 
 impl Component for OrGate
 {
-    fn add_input(&mut self, wire: &str)
+    fn add_input(&mut self, input_comp: &Rc<RefCell<dyn Component>>)
     {
-        self.input.push(wire.to_string());
-    }
-
-    fn get_input(&self) -> Vec<String>
-    {
-        let mut return_vec : Vec<String> = vec![];
-        for wire_id in &self.input
-        {
-            return_vec.push(wire_id.to_string());
-        }
-        return_vec
-    }   
-
-    fn add_output(&mut self, wire: &str)
-    {
-        self.output = wire.to_string();
-    }
-
-    fn get_output(&self) -> String
-    {
-        &self.output.to_string()
+        self.input.push(input_comp.clone());
     }
 
     fn validate_component(&self) -> bool
     {
-        if self.input.len() > 1 && !self.output.is_empty()
+        if self.input.len() >= 2
         {
             return true;
         }
         false
     }
 
-    fn compute_value(&mut self, wire_list: &mut Vec<Wire>)
+    fn compute_value(&mut self) -> u16
     {
-        let mut value : u16 = 0;
-        if self.input.len() == 0
+        if self.value.is_none()
         {
-            panic!("Or_gate with no inputs");
-        }
-        for input_name in &self.input
-        {
-            for wire in &mut *wire_list
+            let mut return_val : u16 = 0;
+            for component in &self.input
             {
-                if *input_name == wire.get_name()
-                {
-                    value |= wire.get_value().unwrap();
-                    break;
-                }
+                return_val |= component.borrow_mut().compute_value();
             }
+            self.value = Some(return_val);
         }
-        
-        for wire in wire_list
-        {
-            if wire.get_name() == self.output
-            {
-                wire.set_value(value);
-                break;
-            }
-        }
+        self.value.unwrap()
     }
 }

@@ -1,73 +1,64 @@
-use crate::component_traits::Component;
-use crate::wire::Wire;
+use std::cell::RefCell;
+use std::rc::Rc;
 
-pub struct CircuitBoard<'a>
+use crate::component_traits::Component;
+use crate::components::wire::Wire;
+
+pub struct CircuitBoard
 {
-    connections : Vec<Wire>,
-    components : Vec<Box<dyn Component>>
+    connections : Vec<Rc<RefCell<Wire>>>,
+    components : Vec<Rc<RefCell<dyn Component>>>
 }
 
-impl CircuitBoard<'_>
+impl CircuitBoard
 {
     pub fn new() -> Self
     {
         Self{connections: Vec::new(), components: Vec::new()}
     }
 
-    pub fn get_mut_connections(&mut self) -> &mut Vec<Wire>
-    {
-        return &mut self.connections;
-    }
-
-    pub fn get_mut_components(&mut self) -> &mut Vec<Box<dyn Component>>
-    {
-        return &mut self.components;
-    }
-
-    pub fn connection_exist(&self, identifier: &str) -> bool
+    pub fn find_wire(&self, id: &str) -> Option<Rc<RefCell<Wire>>>
     {
         for connection in &self.connections
         {
-            if connection.get_name() == identifier
+            if connection.borrow().get_name() == id
             {
-                return true
-            }
-        }
-        false
-    }
-
-    pub fn add_wire(&mut self, wire: Wire)
-    {
-        self.connections.push(wire);
-    }
-
-    pub fn find_wire(&mut self, wire_name: &str) -> Option<&mut Wire>
-    {
-        for wire in &mut self.connections
-        {
-            if wire.get_name() == wire_name
-            {
-                return Some(wire);
+                return Some(connection.clone());
             }
         }
         None
     }
 
-    pub fn add_component(&mut self, component: Box<dyn Component>)
+    pub fn add_wire(&mut self, wire: &Rc<RefCell<Wire>>)
     {
-        self.components.push(component);
+        self.connections.push(wire.clone());
     }
 
-    pub fn find_component_on_output(&mut self, comp_output_name: &str) -> Option<&Box<dyn Component>>
+    pub fn add_component(&mut self, comp: &Rc<RefCell<dyn Component>>)
     {
-        for component in &mut self.components
+        self.components.push(comp.clone());
+    }
+
+    pub fn resolve_board(&self, wire_id: &str) -> Option<u16>
+    {
+        for connection in &self.connections
         {
-            if component.get_output() == comp_output_name
+            if connection.borrow().get_name() == wire_id.to_string()
             {
-                return Some(component);
+                return Some(connection.borrow_mut().compute_value());
             }
         }
+        println!("wire {:?} not found", wire_id);
         None
+    }
+    
+    #[allow(unused)]
+    pub fn print_all_wires(&self)
+    {
+        for wire in &self.connections
+        {
+            println!("Wire: {:?}", wire.borrow().get_name());
+        }
     }
 
 }

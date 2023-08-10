@@ -1,18 +1,21 @@
-use crate::component_traits::Component;
-use crate::wire::Wire;
+use std::cell::RefCell;
+use std::rc::Rc;
 
+use crate::component_traits::Component;
+
+#[derive(Clone)]
 pub struct LShift
 {
-    input : String,
-    output : String,
+    input : Option<Rc<RefCell<dyn Component>>>,
     operation : u32,
+    value : Option<u16>,
 }
 
 impl LShift
 {
     pub fn new() -> Self
     {
-        Self{input: String::new(), output: String::new(), operation: 0}
+        Self{input: None, operation: 0, value: None}
     }
 
     pub fn set_offset(&mut self, offset: u32)
@@ -23,60 +26,34 @@ impl LShift
 
 impl Component for LShift
 {
-    fn add_input(&mut self, wire: &str)
+    fn add_input(&mut self, input_comp: &Rc<RefCell<dyn Component>>)
     {
-        self.input = wire.to_string();
-    }
-
-    fn get_input(&self) -> Vec<String>
-    {
-        vec![&self.input.to_string()]
-    }   
-
-    fn add_output(&mut self, wire: &str)
-    {
-        self.output = wire.to_string();
-    }
-
-    fn get_output(&self) -> String
-    {
-        &self.output.to_string()
+        self.input = Some(input_comp.clone());
     }
 
     fn validate_component(&self) -> bool
     {
-        if !self.input.is_empty() && !self.output.is_empty()
+        if self.value.is_some()
         {
             return true;
         }
         false
     }
 
-    fn compute_value(&mut self, wire_list: &mut Vec<Wire>)
+    fn compute_value(&mut self) -> u16
     {
-        let mut value : u16 = 0;
-        if self.input.len() == 0
+        if self.input.is_none()
         {
             panic!("Left_shift with no inputs");
         }
-        
-        for wire in &mut *wire_list
+
+        if self.value.is_none()
         {
-            if self.input == wire.get_name()
-            {
-                value = wire.get_value().unwrap() << self.operation;
-                break;
-            }
+            let mut ret_val = self.input.as_ref().unwrap().borrow_mut().compute_value();
+            ret_val = ret_val << self.operation;
+            self.value = Some(ret_val);
         }
-        
-        for wire in wire_list
-        {
-            if wire.get_name() == self.output
-            {
-                wire.set_value(value);
-                break;
-            }
-        }
+        self.value.unwrap()
     }
 }
 

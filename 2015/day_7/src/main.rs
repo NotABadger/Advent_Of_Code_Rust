@@ -1,18 +1,17 @@
 mod file_processor_file;
 mod component_traits;
-mod wire;
 mod components;
 mod circuit;
 
-
-use crate::file_processor_file::FileProcessor;
-use crate::circuit::circuit_factory::CircuitFactory;
 use crate::circuit::circuit_board::CircuitBoard;
-use crate::circuit::circuit_resolver::CircuitResolver;
+use crate::circuit::circuit_factory::CircuitFactory;
+use crate::file_processor_file::FileProcessor;
 
 fn main() {
     const INPUT: &str = "input.txt";
     let file_content: String;
+    let mut board: CircuitBoard;
+
 
     if !FileProcessor::check_file_exists(INPUT)
     {
@@ -27,9 +26,15 @@ fn main() {
             panic!();
         }
     }
-    let mut complete_board: CircuitBoard = CircuitFactory::create_circuit_from_file(&file_content);
-    println!("The circuit contained {:?} wires and {:?} components", complete_board.get_mut_connections().len(), complete_board.get_mut_connections().len());
+
+    board = CircuitFactory::create_circuit_from_file(&file_content);
+    //board.print_all_wires();
+    let answer1: u16 = board.resolve_board("a").unwrap();
+    println!("The answer of a is: {:?}", answer1);
+
+    board = CircuitFactory::create_circuit_from_file(&file_content); //clean board
+    board.find_wire("b").unwrap().borrow_mut().set_value(answer1);
     
-    let final_answer : u16 = CircuitResolver::resolve_circuit(&mut complete_board, "a");
-    println!("The value of wire \"a\" is: {:?}", final_answer);
+    let answer2: u16 = board.resolve_board("a").unwrap();
+    println!("The answer of a is: {:?}", answer2);
 }
