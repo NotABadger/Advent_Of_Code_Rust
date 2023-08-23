@@ -1,18 +1,17 @@
-use std::collections::HashMap;
+use std::cell::Cell;
 
-
-#[derive(Debug, Default)]
+#[derive(Debug, Clone)]
 pub struct City
 {
-    pub name: String,
-    pub connections: HashMap<String, u32>,
+    name: String,
+    visited: Cell<bool>,
 }
 
 impl City
 {
-    pub fn set_name(&mut self, name: &str)
+    pub fn new(name : &str) -> Self
     {
-        self.name = name.to_string();
+        Self{name: name.to_string(), visited: Cell::new(false)}
     }
 
     pub fn get_name(&self) -> String
@@ -20,11 +19,18 @@ impl City
         self.name.to_string()
     }
 
-    pub fn add_city_relation(&mut self, name : &str, distance: u32)
+    pub fn get_visited(&self) -> bool
     {
-        if self.connections.get(name).is_none()
-        {
-            self.connections.insert(name.to_string(), distance);
-        }
+        self.visited.get()
+    }
+
+    pub fn visit_city(&self)
+    {
+        self.visited.set(true);
+    }
+
+    pub fn reset_visit(&self)
+    {
+        self.visited.set(false);
     }
 }
