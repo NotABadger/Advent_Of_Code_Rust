@@ -1,6 +1,10 @@
 use crate::{country::Country, route::Route};
 use std::rc::Rc;
 
+/* This algoritm will brute force with shortest roads first per city as a starting point
+    Every city will request the shortest road that goes to a city that hasn't been visited.
+    Recursion will stop when no more cities are visitable */
+
 pub fn resolve_traveler_problem(country: Rc<Country>) -> Option<u32>
 {
     let mut routes_taken: Vec<Route> = Vec::new();
@@ -34,10 +38,10 @@ pub fn resolve_traveler_problem(country: Rc<Country>) -> Option<u32>
         country.reset_all_travel();
     }
 
-    println!("Visiting order: ");
-    println!("{:#?}", cities_visited);
-    println!("Routes taken: ");
-    println!("{:#?}", routes_taken);
+    // println!("Visiting order: ");
+    // println!("{:#?}", cities_visited);
+    // println!("Routes taken: ");
+    // println!("{:#?}", routes_taken);
     shortest_path_all_cities
 }
 

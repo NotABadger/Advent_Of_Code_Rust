@@ -5,8 +5,6 @@ mod country;
 mod county_parser;
 mod shortest_city_path_algoritm_mathieu;
 mod shortest_city_path_algoritm_henri;
-mod brute_force_algorithm;
-mod province;
 
 use std::rc::Rc;
 
@@ -34,12 +32,14 @@ fn main() {
         }
     }
     
-    //println!("{country:#?}");
-
+   
     match shortest_city_path_algoritm_mathieu::resolve_traveler_problem(country.clone()) {
         Some(shortest_route) =>  println!("Shortest route found by Mathieu's algoritm: {}", shortest_route),
         None => println!("Mathieu's algoritm could not find a shortest route that matched the amount of points with amount of cities."),
     }
-
-
+        
+    match shortest_city_path_algoritm_henri::resolve_traveler_problem(country.clone()) {
+        Some(shortest_route) =>  println!("Shortest route found by Henri's algoritm: {}", shortest_route),
+        None => println!("Henri's algoritm could not find a shortest route that matched the amount of points with amount of cities."),
+    }
 }
