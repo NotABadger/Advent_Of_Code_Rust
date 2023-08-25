@@ -106,12 +106,40 @@ impl Country{
             }
         }
 
-        //let temp = possible_routes.iter().min_by(|r1, r2| r1.get_distance().cmp(&r2.get_distance()));
-        let temp = possible_routes.iter().min_by(|r1, r2| r1.get_distance().cmp(&r2.get_distance())); //part two
+        let temp = possible_routes.iter().min_by(|r1, r2| r1.get_distance().cmp(&r2.get_distance()));
         match temp{
             Some(val) => return Some(val.deref().deref().clone()),
             None => return None,
         }
+    }
+
+    pub fn get_not_traveled_route_from_city(&self, city_name: &str) -> Option<Vec<Route>>
+    {
+        let filtered_routes = self.routes.iter().filter(|&r|r.connects_city_str(city_name) == true);
+        let mut possible_routes: Vec<Route> = Vec::new();
+        for route in filtered_routes
+        {
+            
+            if route.connecting_cities.0 == city_name
+            {
+                if !self.is_city_visited(&route.connecting_cities.1)
+                {
+                    possible_routes.push(route.clone());
+                } 
+            }
+            else 
+            {
+                if !self.is_city_visited(&route.connecting_cities.0)
+                {
+                    possible_routes.push(route.clone());
+                }
+            }
+        }
+        if possible_routes.is_empty()
+        {
+            return None;
+        }
+        Some(possible_routes)
     }
 
     pub fn get_roads_sorted_shortest_distance(&self) -> Vec<Route>
