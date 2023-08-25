@@ -6,7 +6,7 @@ mod county_parser;
 mod shortest_city_path_algoritm_mathieu;
 mod shortest_city_path_algoritm_henri;
 mod brute_force_algorithm;
-
+mod province;
 
 use std::rc::Rc;
 

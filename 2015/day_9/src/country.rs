@@ -6,19 +6,19 @@ use crate::city::City;
 use crate::route::Route;
 
 #[derive(Debug)]
-pub struct Country
+pub struct Country<'a>
 {
-    pub cities: HashMap<String, City>,
+    pub cities: HashMap<String, City<'a>>,
     pub routes: Vec<Route>,
 }
 
-impl Default for Country{
+impl Default for Country<'_>{
     fn default() -> Self {
         Self { cities: HashMap::new(), routes: Vec::new() }
     }
 }
 
-impl Country{
+impl Country<'_>{
     pub fn is_city_known(&self, city_name: &str) -> bool
     {
         return self.cities.iter().any(|c| c.0.eq(city_name))

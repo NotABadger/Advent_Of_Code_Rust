@@ -1,22 +1,19 @@
 use std::cell::Cell;
 
+use crate::province::Province;
+
 #[derive(Debug, Clone)]
-pub struct City
+pub struct City<'a>
 {
-    name: String,
     visited: Cell<bool>,
+    province: Option<&'a Province>,
 }
 
-impl City
+impl City<'_>
 {
-    pub fn new(name : &str) -> Self
+    pub fn new() -> Self
     {
-        Self{name: name.to_string(), visited: Cell::new(false)}
-    }
-
-    pub fn get_name(&self) -> String
-    {
-        self.name.to_string()
+        Self{visited: Cell::new(false), province: None}
     }
 
     pub fn get_visited(&self) -> bool
@@ -32,5 +29,24 @@ impl City
     pub fn reset_visit(&self)
     {
         self.visited.set(false);
+    }
+
+    pub fn set_province(&mut self, province: &Province)
+    {
+        self.province = Some(province);
+    }
+
+    pub fn clear_province(&mut self)
+    {
+        self.province = None;
+    }
+
+    pub fn get_provinde(&self) -> Option<u32>
+    {
+        match self.province
+        {
+            Some(prov) => return Some(prov.get_id()),
+            None => return None,
+        }
     }
 }

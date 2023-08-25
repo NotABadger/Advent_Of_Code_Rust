@@ -18,11 +18,11 @@ pub fn parse_country(list_of_cities : &str) -> Country
 
         if !country.is_city_known(start_city_name)
         {
-            country.cities.insert(start_city_name.to_string(), City::new(start_city_name));
+            country.cities.insert(start_city_name.to_string(), City::new());
         }
         if !country.is_city_known(destination_city_name)
         {
-            country.cities.insert(destination_city_name.to_string(), City::new(destination_city_name));
+            country.cities.insert(destination_city_name.to_string(), City::new());
         }
         if !country.is_route_known(start_city_name, destination_city_name)
         {

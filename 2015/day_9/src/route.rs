@@ -1,6 +1,3 @@
-use crate::city::City;
-
-
 #[derive(Debug, Clone)]
 pub struct Route
 {
@@ -18,11 +15,6 @@ impl Route
     pub fn get_distance(&self) -> u32
     {
         self.distance
-    }
-
-    pub fn connects_city_ref(&self, city: &City) -> bool
-    {
-        self.connects_city_str(&city.get_name())
     }
 
     pub fn connects_city_str(&self, city: &str) -> bool

@@ -1,11 +1,22 @@
-use crate::country::{Country, self};
+use std::rc::Rc;
+use crate::country::Country;
+use crate::city::City;
+use crate::province::Province;
+use crate::route::Route;
 
-pub fn resolve_traveler_problem(country: &Country) -> Option<u32>
+pub fn resolve_traveler_problem(country: Rc<Country>) -> Option<u32>
 {
+    let mut routes_taken: Vec<Route> = Vec::new();
+    let mut cities_visited: Vec<String> = Vec::new();
+    let mut provinces: Vec<Province> = Vec::new();
+    let mut province_id_gen: u32 = 0;
     let mut shortest_path_all_cities: Option<u32> = None;
+
+
     /*kortste wegen gebruiken sorteren, steden koppelen aan provincies */
     /* meer koppels maken */
     /* kortste wegen tussen koppels & nieuwe stad, tot hele stad is betrokken*/
+    let shortest_roads;//TODO
 
 
     // for city in &country.cities
