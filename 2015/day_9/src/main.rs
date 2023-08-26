@@ -44,8 +44,6 @@ fn main() {
         None => println!("Henri's algoritm could not find a shortest route that matched the amount of points with amount of cities."),
     }
 
-    match brute_force_all_paths::resolve_traveler_problem(country.clone()) {//Finding all paths
-        Some(_) =>  (), //this algoritm prints the top of the stack to the terminal
-        None => (),
-    }
+    brute_force_all_paths::resolve_traveler_problem(country.clone())//Finding all paths
+    
 }

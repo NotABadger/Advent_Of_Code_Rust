@@ -1,80 +1,64 @@
 use crate::{country::Country, route::Route};
 use std::rc::Rc;
 
+
 /* This algoritm will brute force with all roads per city, and all cities as a starting point
     Every city will request the all roads that goes to a city that hasn't been visited.
     Recursion will stop when no all routes have been checked */
 
-pub fn resolve_traveler_problem(country: Rc<Country>) -> Option<u32>
+pub fn resolve_traveler_problem(country: Rc<Country>)
 {
-    let mut routes_taken: Vec<Route> = Vec::new();
-    let mut cities_visited: Vec<String> = Vec::new();
-    let mut shortest_path_all_cities: Option<u32> = None;
-    /*grab shortest route from this city, travel it if other city is unvisited */
+    let mut routes_tested: u32 = 0;
+    let mut longest_route: u32 = 0;
+    let mut shortest_route: u32 = u32::MAX;
+
 
     for itt in country.cities.iter()
     {//take every city as starting point
-        let mut roads_taken: Vec<Route> = Vec::new();
-        let mut city_order: Vec<String> = Vec::new();
-        let shortest_path_this_city: u32 = travel_all_roads(country.clone(), &itt.0, &mut roads_taken, &mut city_order).expect("would at least expect 1 city traveled");
-        let amount_of_cities_connected: u32 = country.get_amount_visited_countries(); // start with current city
-
-        //see if we have connected all cities
-        if amount_of_cities_connected == country.cities.len() as u32
-        {
-            match shortest_path_all_cities
-            {
-                Some(value) => {
-                    //if shortest_path_this_city < value
-                    if shortest_path_this_city > value //part two
-                    {
-                        shortest_path_all_cities = Some(shortest_path_this_city);
-                        routes_taken = roads_taken;
-                        cities_visited = city_order;
-                    }
-                },
-                None =>shortest_path_all_cities = Some(shortest_path_this_city),
-            } 
-        }
+        let mut roads_taken: Vec<Route> = Vec::new();       
+        travel_all_roads(country.clone(), &itt.0, &mut roads_taken,&mut routes_tested, &mut shortest_route, &mut longest_route);
         country.reset_all_travel();
     }
 
-    // println!("Visiting order: ");
-    // println!("{:#?}", cities_visited);
-    // println!("Routes taken: ");
-    // println!("{:#?}", routes_taken);
-    shortest_path_all_cities
+    println!("amount of routes tested: {:?}", routes_tested);
+    println!("Brute force found shortest route: {:?}", shortest_route);
+    println!("Brute force found longest route: {:?}", longest_route);
 }
 
-pub fn travel_all_roads(country: Rc<Country>, city: &str, roads_taken: &mut Vec<Route>, cities_visited: &mut Vec<String>) -> Option<u32>
+pub fn travel_all_roads(country: Rc<Country>, city: &str, roads_taken: &mut Vec<Route>, routes_tested: &mut u32, shortest_road: &mut u32, longest_road: &mut u32)
 {
+    /*  Visit current city, and retrieve possible routes to not yet visited cities
+        when no more cities are available, print result of route
+        When roads are available, travel them ALL.*/
     country.visit_city(city);
-    cities_visited.push(city.to_string()); //only admin for route info
     
     let routes = country.get_not_traveled_route_from_city(city);
     if routes.is_none()
     {
         let mut total_distance = 0;
         roads_taken.iter().for_each(|road| total_distance += road.get_distance());
-        println!("End of road, total distance: {:?}",total_distance);
-        println!("roads taken: {:?}",roads_taken);
+        if total_distance > *longest_road
+        {
+            *longest_road = total_distance;
+        }
+        if total_distance < *shortest_road
+        {
+            *shortest_road = total_distance;
+        }
+        *routes_tested += 1;
+        //println!("End of road, total distance: {:?}",total_distance);
+        //println!("roads taken: {:?}",roads_taken);
         roads_taken.pop();
-        cities_visited.pop();
-        return None;
+        country.unvisit_city(city);
+        return;
     }
 
     for road in routes.unwrap()//order of roads doesn't matter, all need to be tried
     {
         
         roads_taken.push(road.clone());
-        let total_traveled_distance: u32 = road.get_distance();
-        match travel_all_roads(country.clone(), &road.get_destination_city(city), roads_taken, cities_visited) 
-        {
-            Some(distance) => return Some(1),
-            None => continue,
-        } 
+        travel_all_roads(country.clone(), &road.get_destination_city(city), roads_taken, routes_tested, shortest_road, longest_road);
     }
     roads_taken.pop();
-    cities_visited.pop();
-    return Some(1);
+    country.unvisit_city(city);
 }

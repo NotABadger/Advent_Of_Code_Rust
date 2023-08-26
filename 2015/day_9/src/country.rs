@@ -50,6 +50,18 @@ impl Country{
         }
     }
 
+    pub fn unvisit_city(&self, city_name: &str)
+    {
+        match self.cities.get(city_name)
+        {
+            Some(city) => city.reset_visit(),
+            None => {
+                println!("Tried to visit non exisiting city: {:?}", city_name);
+                panic!();
+            }
+        }
+    }
+
     pub fn get_citys_visit_count(&self, city_name: &str) -> u32
     {
         match self.cities.get(city_name)
