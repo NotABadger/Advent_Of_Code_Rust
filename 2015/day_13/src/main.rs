@@ -1,4 +1,7 @@
 mod file_processor_file;
+mod guests;
+mod person;
+mod relation;
 
 use file_processor_file::FileProcessor;
 
