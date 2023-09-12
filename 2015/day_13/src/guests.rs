@@ -34,6 +34,12 @@ impl Guests {
         return self.relations.iter().any(|r| r.person_in_relation(person1_name) && r.person_in_relation(person2_name));
     }
 
+    pub fn get_relation(&self, person1_name: &str, person2_name: &str) -> &Relation
+    {
+        let relation = self.relations.iter().find(|r| r.person_in_relation(person1_name) && r.person_in_relation(person2_name));
+        return relation.expect("Relation should have been checked with is_relation_known");
+    }
+
     pub fn seat_person(&self, person_name: &str)
     {
         match self.people.get(person_name)
@@ -58,16 +64,22 @@ impl Guests {
         }
     }
 
-    pub fn get_amount_seated_guests(&self) -> u32
+    pub fn get_remaining_guest_relations(&self, person_name: &str) -> Option<Vec<Relation>>
     {
-        let mut visited: u32 = 0;
-        for guest in &self.people
+        let mut returnVal: Vec<Relation> = Vec::new();
+        let relations_itt = self.relations.iter().filter(|&r| r.person_in_relation(person_name));
+        for this_relation in relations_itt
         {
-            if guest.1.get_seated()
+            let peep = this_relation.get_other_person_in_relation(person_name);
+            if !self.is_person_seated(&peep)
             {
-                visited += 1;
+                returnVal.push(this_relation.clone());
             }
         }
-        visited
+        if returnVal.len() > 0
+        {
+            return Some(returnVal);
+        }
+        return None;
     }
 }

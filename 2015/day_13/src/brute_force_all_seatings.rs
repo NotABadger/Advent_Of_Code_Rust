@@ -14,53 +14,58 @@ pub fn resolve_seating_problem(guest_list: Rc<Guests>)
     let mut best_seating: i32 = i32::MIN;
     let mut worst_seating: i32 = i32::MAX;
 
-
-    for itt in guest_list.cities.iter()
-    {//take every city as starting point
+    for itt in guest_list.people.iter()
+    {//take every person/guest as starting point
         let mut seating_order: Vec<Relation> = Vec::new();       
-        try_all_seating_combos(country.clone(), &itt.0, &mut seating_order,&mut routes_tested, &mut shortest_route, &mut longest_route);
-        country.reset_all_travel();
+        try_all_seating_combos(guest_list.clone(), &itt.0, &mut seating_order,&mut seatings_tested, &mut best_seating, &mut worst_seating, itt.0);
+        itt.1.reset_seating();
     }
 
-    println!("Amount of routes tested: {:?}", seatings_tested);
+    println!("Amount of seating combinations tested: {:?}", seatings_tested);
     println!("Brute force found best seating: {:?}", best_seating);
     println!("Brute force found worst seating: {:?}", worst_seating);
 }
 
-pub fn try_all_seating_combos(country: Rc<Guests>, city: &str, roads_taken: &mut Vec<Relation>, routes_tested: &mut u32, shortest_road: &mut i32, longest_road: &mut i32)
+pub fn try_all_seating_combos(guest_list: Rc<Guests>, guest: &str, seating_order: &mut Vec<Relation>, seatings_tested: &mut u32, best_seating: &mut i32, worst_seating: &mut i32, first_seated: &str)
 {
-    /*  Visit current city, and retrieve possible routes to not yet visited cities
-        when no more cities are available, print result of route
-        When roads are available, travel them ALL.*/
-    country.visit_city(city);
+    /*  Seat the given guest, and retrieve remaining possible relations that with guests that are not yet seated
+        when no more guests/relations are available, print result of seating arrangement
+        When more guests are available, try all combinations */
+    guest_list.seat_person(guest);
     
-    let routes = country.get_not_traveled_route_from_city(city);
-    if routes.is_none()
+    let possible_relations = guest_list.get_remaining_guest_relations(guest);
+    if possible_relations.is_none()
     {
-        let mut total_distance = 0;
-        roads_taken.iter().for_each(|road| total_distance += road.get_distance());
-        if total_distance > *longest_road
+        let mut total_happiness : i32 = 0 ;
+
+        if guest_list.is_relation_known(first_seated, guest)
         {
-            *longest_road = total_distance;
+            total_happiness += guest_list.get_relation(first_seated, guest).get_happiness_score();
+            seating_order.iter().for_each(|relation| total_happiness += relation.get_happiness_score());
+            if total_happiness > *best_seating
+            {
+                *best_seating = total_happiness;
+            }
+            if total_happiness < *worst_seating
+            {
+                *worst_seating = total_happiness;
+            }
+            *seatings_tested += 1; 
         }
-        if total_distance < *shortest_road
+        else 
         {
-            *shortest_road = total_distance;
+            println!("last relation could not be found. {:0}, {:1}", first_seated, guest);
         }
-        *routes_tested += 1;
-        //println!("End of road, total distance: {:?}",total_distance);
-        //println!("roads taken: {:?}",roads_taken);
-        roads_taken.pop();
-        country.unvisit_city(city);
+
+        guest_list.unseat_guest(guest);
         return;
     }
 
-    for road in routes.unwrap()//order of roads doesn't matter, all need to be tried
+    for relation in possible_relations.unwrap()//order of relations doesn't matter, all need to be tried
     {
-        
-        roads_taken.push(road.clone());
-        travel_all_roads(country.clone(), &road.get_destination_city(city), roads_taken, routes_tested, shortest_road, longest_road);
+        seating_order.push(relation.clone());
+        try_all_seating_combos(guest_list.clone(), &relation.get_other_person_in_relation(guest), seating_order, seatings_tested, best_seating, worst_seating, first_seated);
+        seating_order.pop();
     }
-    roads_taken.pop();
-    country.unvisit_city(city);
+    guest_list.unseat_guest(guest);
 }
