@@ -82,11 +82,8 @@ impl Recipe
         {
             texture_score = 0;
         }
-        if calories_score < 0
-        {
-            calories_score = 0;
-        }
-        let total_score: u32 = capacity_score as u32 * durability_score as u32 * flavor_score as u32 * texture_score as u32; // * calories_score as u32;
+        
+        let total_score: u32 = capacity_score as u32 * durability_score as u32 * flavor_score as u32 * texture_score as u32;
         if print
         {
             println!("Total overall score is: {}!", total_score);

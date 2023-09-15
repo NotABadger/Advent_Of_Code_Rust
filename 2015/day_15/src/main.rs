@@ -1,10 +1,10 @@
 mod ingredient;
-mod recipe_creator;
+mod recipe_creator_part_1;
 mod recipe;
 
 use ingredient::Ingredient;
 use recipe::Recipe;
-use recipe_creator::create_coockie_recipy_1;
+use recipe_creator_part_1::create_coockie_recipy_part_1;
 
 fn main() {
 
@@ -17,8 +17,9 @@ fn main() {
     
 
     //Logic on balancing ingredients\\
-    cookie_recipe = create_coockie_recipy_1(&available_ingredients);
+    cookie_recipe = create_coockie_recipy_part_1(&available_ingredients);
 
+    println!("The highest score:");
     cookie_recipe.calculate_score(true);
 }
 
