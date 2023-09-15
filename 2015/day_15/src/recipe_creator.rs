@@ -1,37 +1,87 @@
-use crate::ingredient::Ingredient;
+use crate::ingredient::{Ingredient, self};
 use crate::recipe::{Recipe, Property};
+
 
 pub fn create_coockie_recipy_1(ingredients: &Vec<Ingredient>) -> Recipe
 {
     //fill recepy with equal parts of ingredients, and the tweak to see how far we can get.
-    let mut cookie_recipy: Recipe = Recipe::default();
+    let mut cookie_recipy: RecipeCreator = RecipeCreator{working_recipe: Recipe::default()};
+    for ingr in ingredients
+    {
+        cookie_recipy.working_recipe.add_possible_ingredient(ingr);
+    }
+    cookie_recipy.working_recipe.devide_ingredients_equally();
+    println!("Values after adding all ingredients:");
+    cookie_recipy.working_recipe.calculate_score(true);
 
-    let mut ordered_by_fullness = ingredients.clone();
-    
-
-
-    println!("Highest density ingredient: {}", ordered_by_fullness.get(0).expect("Hand-programmed the values myself...").get_name());
-    return cookie_recipy;
+    //now start tweaking
+    cookie_recipy.calibrate_for_highest_score();
+    return cookie_recipy.working_recipe;
 }
 
-fn get_supporting_ingredient(property_to_fix: Property, fullness_ordered_ingredient_list: &Vec<Ingredient>) -> &Ingredient 
+struct RecipeCreator
 {
-    match property_to_fix { // original intention was to use find and compensate with the fullest alternative (see ful parameter in ingredient)
-        Property::Capacity => {
-            return fullness_ordered_ingredient_list.iter().max_by(|&ingr1, &ingr2| ingr1.get_capacity().cmp(&ingr2.get_capacity())).unwrap();
+    pub working_recipe: Recipe,
+}
+
+impl RecipeCreator
+{
+
+    fn calibrate_for_highest_score(&mut self)
+    {
+        let mut improved_score: bool = true;
+        while improved_score 
+        {
+            improved_score = false;
+            let amount_of_ingredients = self.working_recipe.available_ingredients.len();
+            for ingr in 0..amount_of_ingredients
+            {
+                let ingredient: String = self.working_recipe.available_ingredients.get(ingr).expect("used len for max/min index").get_name();
+                improved_score |= self.calibrate_ingredient(&ingredient);
+            }
+            //Loop through all possible ingredients
+            //Check if adding ingredient instead of other will increase score
+            //This checking will happen per ingredient replacing each other type of ingredient
+            //If changing improved the score we will keep tweaking
+            //After a while the max score has been found
         }
-        Property::Durability => {
-            return fullness_ordered_ingredient_list.iter().max_by(|&ingr1, &ingr2| ingr1.get_durability().cmp(&ingr2.get_durability())).unwrap();
-        },
-        Property::Flavor => {
-            return fullness_ordered_ingredient_list.iter().max_by(|&ingr1, &ingr2| ingr1.get_flavor().cmp(&ingr2.get_flavor())).unwrap();
-        },
-        Property::Texture => {
-            return fullness_ordered_ingredient_list.iter().max_by(|&ingr1, &ingr2| ingr1.get_texture().cmp(&ingr2.get_texture())).unwrap();
-        },
-        Property::Calories => {
-            return fullness_ordered_ingredient_list.iter().max_by(|&ingr1, &ingr2| ingr1.get_calories().cmp(&ingr2.get_calories())).unwrap();
-        },
-        _ => panic!("impossibruuuuu!!!"),
+    }
+
+    fn calibrate_ingredient(&mut self, ingredient: &str) -> bool
+    {
+        let mut improved_with_ingredient = false;
+        let mut itt = self.working_recipe.available_ingredients.iter();
+        for ingr in itt
+        {
+            let ingredient_to_remove = 
+            if ingr.get_name() == ingredient
+            {//can't replace ingredient with own ingredient
+                continue;
+            }
+
+            let mut replacing_this_recipe_worked: bool = true;
+            let mut old_score = self.working_recipe.calculate_score(false);
+            while replacing_this_recipe_worked
+            {
+                self.replace_ingredient(ingredient, &ingr.get_name());
+                let new_score = self.working_recipe.calculate_score(false);
+                if old_score < new_score
+                { //replacing improved score
+                    self.replace_ingredient(&ingr.get_name(), ingredient); //undo
+                    replacing_this_recipe_worked = false;
+                }
+                else 
+                {
+                    old_score = new_score;
+                    improved_with_ingredient = true;
+                }
+            }
+        }
+        return improved_with_ingredient;
+    }
+
+    fn replace_ingredient(&mut self, ingredient_to_add: &str, ingredient_to_remove: &str)
+    {
+        todo!();
     }
 }
