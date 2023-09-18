@@ -18,8 +18,12 @@ fn main() {
 
     //Logic on balancing ingredients\\
     cookie_recipe = create_coockie_recipy_part_1(&available_ingredients);
-
     println!("The highest score:");
     cookie_recipe.calculate_score(true);
+    for ind in cookie_recipe.amount_of_ingredient
+    {
+        println!("Recepy containes {} of {}", ind.1, ind.0);
+    }
+    
 }
 

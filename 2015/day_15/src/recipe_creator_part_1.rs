@@ -73,7 +73,8 @@ impl RecipeCreator
                     improved_with_ingredient = true;
                 }
                 else 
-                {
+                {//WARNING, when a value is used 0 or 100 times, the undo will ruin the logic. this usecase is not hit in example.
+                    //I was too lazy to cover this in puzzle code, but could have returned a bool or Option while replacing
                     self.replace_ingredient(&ingredient_to_remove, ingredient); //undo
                     replacing_this_recipe_worked = false;
                 }
