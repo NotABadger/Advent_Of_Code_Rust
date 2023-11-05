@@ -43,7 +43,8 @@ impl Aunt{
         }
         if guess.cats.is_some()
         {
-            if self.cats.expect("don't know sender") != guess.cats.expect("hi")
+            //if self.cats.expect("don't know sender") != guess.cats.expect("hi") //Part 1
+            if self.cats.expect("don't know sender") > guess.cats.expect("hi")
             {
                 return false;
             }
@@ -57,7 +58,8 @@ impl Aunt{
         }
         if guess.pomeranians.is_some()
         {
-            if self.pomeranians.expect("don't know sender") != guess.pomeranians.expect("hi")
+            //if self.pomeranians.expect("don't know sender") != guess.pomeranians.expect("hi") //Part 1
+            if self.pomeranians.expect("don't know sender") < guess.pomeranians.expect("hi")
             {
                 return false;
             }
@@ -78,14 +80,16 @@ impl Aunt{
         }
         if guess.goldfish.is_some()
         {
-            if self.goldfish.expect("don't know sender") != guess.goldfish.expect("hi")
+            //if self.goldfish.expect("don't know sender") != guess.goldfish.expect("hi") //Part 1
+            if self.goldfish.expect("don't know sender") < guess.goldfish.expect("hi")
             {
                 return false;
             }
         }
         if guess.trees.is_some()
         {
-            if self.trees.expect("don't know sender") != guess.trees.expect("hi")
+            //if self.trees.expect("don't know sender") != guess.trees.expect("hi") //Part 1
+            if self.trees.expect("don't know sender") > guess.trees.expect("hi")
             {
                 return false;
             }
