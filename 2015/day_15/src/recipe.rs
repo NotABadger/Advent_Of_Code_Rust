@@ -1,9 +1,8 @@
 use std::collections::HashMap;
-
 use crate::ingredient::Ingredient;
 
-const MAX_AMOUNT_OF_INGREDIENTS: u32 = 100;
-#[derive(Debug)]
+pub const MAX_AMOUNT_OF_INGREDIENTS: u32 = 100;
+#[derive(Debug, Clone)]
 pub struct Recipe
 {
     pub available_ingredients: Vec<Ingredient>,
@@ -37,7 +36,7 @@ impl Recipe
         }
     }
 
-    pub fn calculate_score(&self, print: bool) -> u32
+    pub fn calculate_score(&self, print: bool, part_2: bool) -> u32
     {
         let mut capacity_score: i32 = 0;
         let mut durability_score: i32 = 0;
@@ -83,7 +82,11 @@ impl Recipe
             texture_score = 0;
         }
         
-        let total_score: u32 = capacity_score as u32 * durability_score as u32 * flavor_score as u32 * texture_score as u32;
+        let mut total_score: u32 = capacity_score as u32 * durability_score as u32 * flavor_score as u32 * texture_score as u32;
+        if part_2 && calories_score != 500
+        {
+            total_score = 0;
+        }
         if print
         {
             println!("Total overall score is: {}!", total_score);

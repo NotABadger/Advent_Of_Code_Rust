@@ -10,10 +10,12 @@ pub fn create_coockie_recipy_part_1(ingredients: &Vec<Ingredient>) -> Recipe
     {
         cookie_recipy.working_recipe.add_possible_ingredient(ingr);
     }
+    //WARNING: if the "devide_ingredients_equally" gives a negative or 0 score, it will ruin the logic.
+    //This is only puzzle code, so I won't fix it
     cookie_recipy.working_recipe.devide_ingredients_equally();
     
     println!("Values after adding all ingredients:");
-    cookie_recipy.working_recipe.calculate_score(true);
+    cookie_recipy.working_recipe.calculate_score(true, false);
 
     //now start tweaking
     cookie_recipy.calibrate_for_highest_score();
@@ -62,11 +64,11 @@ impl RecipeCreator
             }
 
             let mut replacing_this_recipe_worked: bool = true;
-            let mut old_score = self.working_recipe.calculate_score(false);
+            let mut old_score = self.working_recipe.calculate_score(false, false);
             while replacing_this_recipe_worked
             {
                 self.replace_ingredient(ingredient, &ingredient_to_remove);
-                let new_score = self.working_recipe.calculate_score(false);
+                let new_score = self.working_recipe.calculate_score(false, false);
                 if old_score < new_score
                 { //replacing improved score
                     old_score = new_score;

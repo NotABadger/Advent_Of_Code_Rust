@@ -9,14 +9,12 @@ pub struct Ingredient
     flavor: i32,
     texture: i32,
     calories: i32,
-    fullness: i32,
 }
 
 impl Ingredient {
     pub fn new(name: &str, capacity: i32, durability: i32, flavor: i32, texture: i32, calories: i32) -> Self
     {
-        let fullness: i32 = capacity + durability + flavor + texture; // + calories
-        Self{name: name.to_string(), capacity, durability, flavor, texture, calories, fullness}
+        Self{name: name.to_string(), capacity, durability, flavor, texture, calories}
     }
 
     pub fn get_name(&self) -> String
@@ -43,10 +41,5 @@ impl Ingredient {
     {
         self.calories
     }
-    pub fn get_fullness(&self) -> i32
-    {
-        self.fullness
-    }
-
 
 }
