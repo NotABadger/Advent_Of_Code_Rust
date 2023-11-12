@@ -1,8 +1,8 @@
 
-
+#[derive(Debug)]
 pub struct Replacement{
-    find: String,
-    replace: String,
+    pub find: String,
+    pub replace: String,
 }
 
 impl Replacement{

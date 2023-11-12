@@ -1,17 +1,18 @@
 mod file_processor_file;
 mod replacement;
 mod parse_text;
+mod machine_calibration;
 
 use replacement::Replacement;
 
-use crate::file_processor_file::FileProcessor;
+use crate::{file_processor_file::FileProcessor, machine_calibration::calibrate_machine};
 use std::process::exit;
 
 const FILE: &str = "input.txt";
 fn main() {
     let file_content: String;
-    let mut replacements: Vec<Replacement> = Vec::new();
-   
+    let replacements: Vec<Replacement>;
+    let molecule: String;
 
     if !FileProcessor::check_file_exists(FILE)
     {
@@ -23,6 +24,11 @@ fn main() {
         Err(msg) => panic!("{}",msg),
     }
    
+    replacements = parse_text::parse_replacements(&file_content);
+    molecule = parse_text::parse_molecule(&file_content);
+    
+    let mut found_mutations: Vec<String> = Vec::new();
+    calibrate_machine(&molecule, &replacements, &mut found_mutations);
 
-
+    println!("Amount of mutations found: {}", found_mutations.len());
 }
