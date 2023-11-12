@@ -5,7 +5,8 @@ mod machine_calibration;
 
 use replacement::Replacement;
 
-use crate::{file_processor_file::FileProcessor, machine_calibration::calibrate_machine};
+use crate::file_processor_file::FileProcessor;
+use crate::machine_calibration::calibrate_machine;
 use std::process::exit;
 
 const FILE: &str = "input.txt";

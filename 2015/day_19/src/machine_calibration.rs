@@ -14,7 +14,7 @@ pub fn calibrate_machine(molecule: &str, replacements: &Vec<Replacement>, create
                     add_mutation_to_list(molecule_variant, created_mutations);
                     index += found_index +1;       
                 },
-                None => return,
+                None => break,
             }
         }
     }
