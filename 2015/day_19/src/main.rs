@@ -2,6 +2,8 @@ mod file_processor_file;
 mod replacement;
 mod parse_text;
 mod machine_calibration;
+mod reverse_engineer_molecule;
+mod molecule_data;
 
 use replacement::Replacement;
 
