@@ -3,13 +3,15 @@ mod replacement;
 mod parse_text;
 mod machine_calibration;
 mod reverse_engineer_molecule;
+mod reverse_engineer_molecule_attempt_two;
 mod molecule_data;
 
 use replacement::Replacement;
 
 use crate::file_processor_file::FileProcessor;
 use crate::machine_calibration::calibrate_machine;
-use crate::reverse_engineer_molecule::reverse_engineer_molecule;
+//use crate::reverse_engineer_molecule::reverse_engineer_molecule;
+//use crate::reverse_engineer_molecule_attempt_two::reverse_engineer_molecule;
 use std::process::exit;
 
 const FILE: &str = "input.txt";
@@ -43,5 +45,6 @@ fn main() {
 
     println!("Amount of mutations found: {}", found_mutations.len());
 
-    reverse_engineer_molecule(&molecule, &replacements);
+    //reverse_engineer_molecule::reverse_engineer_molecule(&molecule, &replacements);
+    reverse_engineer_molecule_attempt_two::reverse_engineer_molecule(&molecule, &replacements);
 }
