@@ -2,7 +2,7 @@
 const PACKAGES_TO_HAVE: u32 = 29_000_000; 
 fn main() {
     let mut house_not_found: bool = true;
-    let mut house_counter: u32 = 0;
+    let mut house_counter: u32 = 600_000;
 
     while house_not_found
     {
