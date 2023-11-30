@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+    "input_file_lib",
+    "day_test",
+]
