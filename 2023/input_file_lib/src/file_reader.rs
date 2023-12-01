@@ -5,7 +5,7 @@ pub fn read_file(file_path : &str) -> Result<String, &'static str>
 {
     let file_read_result = fs::read_to_string(file_path);
     match file_read_result {
-        Ok(content) => return Ok(content),
+        Ok(content) => return Ok(content.trim().to_string()),
         Err(_error) => return Err("Opening and reading failed."),
     };
 }
