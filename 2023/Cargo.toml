@@ -3,4 +3,5 @@
 members = [
     "input_file_lib",
     "day_1",
+    "day_2",
 ]
