@@ -86,7 +86,7 @@ fn check_gear_for_ratios(matrix: &Vec<Vec<char>>, size: (usize, usize), star_pos
             //found number
             number_str_list.push(find_complete_number(matrix, size, (star_pos.0 +1, star_pos.1)));
         }
-        else 
+        else
         {
             if star_pos.1 > 0
             {
@@ -121,15 +121,21 @@ fn find_complete_number(matrix: &Vec<Vec<char>>, size: (usize, usize), first_num
     let mut found_number: bool = true;
     let mut reading_coordinate: (usize, usize) = first_num_found;
     let mut return_str: String = String::new();
-    while found_number // check after 
+    while found_number // check after
     {
         found_number = false;
-        if reading_coordinate.1 < size.1 && matrix[reading_coordinate.0][reading_coordinate.1].is_digit(10)
+        if matrix[reading_coordinate.0][reading_coordinate.1].is_digit(10)
         {//check if we don't run outside of the matrix, and if digit
             return_str.push(matrix[reading_coordinate.0][reading_coordinate.1]);
             found_number = true;
         }
-        reading_coordinate.1 += 1;
+        if reading_coordinate.1 +1 < size.1
+        {
+            reading_coordinate.1 += 1;
+        }
+        else {
+            found_number = false;
+        }
     }
 
     if first_num_found.1 > 1
@@ -137,11 +143,17 @@ fn find_complete_number(matrix: &Vec<Vec<char>>, size: (usize, usize), first_num
         found_number = true;
         reading_coordinate = first_num_found;
 
-        while found_number // check before 
+        while found_number // check before
         {
             found_number = false;
-            reading_coordinate.1 -= 1;
-            if reading_coordinate.1 > 0 && matrix[reading_coordinate.0][reading_coordinate.1].is_digit(10)
+            if reading_coordinate.1 > 0
+            {
+                reading_coordinate.1 -= 1;
+            }
+            else {
+                break;
+            }
+            if matrix[reading_coordinate.0][reading_coordinate.1].is_digit(10)
             {//check if we don't run outside of the matrix, and if digit
                 return_str.insert(0,matrix[reading_coordinate.0][reading_coordinate.1]);
                 found_number = true;
