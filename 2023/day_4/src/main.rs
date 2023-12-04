@@ -46,11 +46,4 @@ fn main() {
     
     println!("You will have {} cards in total", list_of_cards.len());
 
-    // for card in list_of_cards_and_copies {
-    //     println!("{:?}, amount won: {:?}", card.get_number(), card.get_amount_numbers_won());
-    // }
-
 }
-
-
-// 981 is too low
