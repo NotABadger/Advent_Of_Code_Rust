@@ -2,7 +2,7 @@ mod file_reader;
 mod parse_commandline_args;
 
 
-pub fn read_file_content() -> Result<String,  Box<dyn std::error::Error>>
+pub fn read_file_content() -> Result<String, Box<dyn std::error::Error>>
 {
     let arguments: Vec<String> = parse_commandline_args::retrieve_commandline_args();
     match arguments.get(1)
