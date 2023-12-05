@@ -1,5 +1,3 @@
-use core::num;
-
 use crate::translation_range::*;
 use crate::plant_data::PlantData;
 
@@ -20,7 +18,7 @@ pub fn parse_data_from_file_content(file_content: &str, seeds_list: &mut Vec<Pla
         {
             for number_str in line.split_whitespace()
             {
-                match number_str.parse::<u32>()
+                match number_str.parse::<u64>()
                 {
                     Ok(seed_nr) => seeds_list.push(PlantData::new(seed_nr)),
                     Err(_) => continue,
@@ -84,13 +82,13 @@ pub fn parse_data_from_file_content(file_content: &str, seeds_list: &mut Vec<Pla
             match index
             {
                 0 => {
-                    trans_range.start = number_str.parse::<u32>().unwrap();
+                    trans_range.start = number_str.parse::<u64>().unwrap();
                 },
                 1 => {
-                    trans_range.map = number_str.parse::<u32>().unwrap();
+                    trans_range.map = number_str.parse::<u64>().unwrap();
                 },
                 2 => {
-                    trans_range.amount = number_str.parse::<u32>().unwrap();
+                    trans_range.amount = number_str.parse::<u64>().unwrap();
                 },
                 _ => println!("Well... this is a problem, I was expecting a number string"),
             }
