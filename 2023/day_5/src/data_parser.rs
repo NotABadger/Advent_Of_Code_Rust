@@ -82,10 +82,10 @@ pub fn parse_data_from_file_content(file_content: &str, seeds_list: &mut Vec<Pla
             match index
             {
                 0 => {
-                    trans_range.start = number_str.parse::<u64>().unwrap();
+                    trans_range.map = number_str.parse::<u64>().unwrap();
                 },
                 1 => {
-                    trans_range.map = number_str.parse::<u64>().unwrap();
+                    trans_range.start = number_str.parse::<u64>().unwrap();
                 },
                 2 => {
                     trans_range.amount = number_str.parse::<u64>().unwrap();

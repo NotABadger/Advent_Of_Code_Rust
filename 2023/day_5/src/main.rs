@@ -73,8 +73,6 @@ fn main() {
     }
 
     plant_data_list.sort_by(| plant, plant2 | plant.location_nr.cmp(&plant2.location_nr));
+    println!("plant seed: {}, plant location: {}", plant_data_list.first().unwrap().seed_nr, plant_data_list.first().unwrap().location_nr);
 
-    println!("{:?}", plant_data_list.first().unwrap().location_nr);
-    println!("{:?}", plant_data_list.last().unwrap().location_nr);
-    //220787827 too low
 }

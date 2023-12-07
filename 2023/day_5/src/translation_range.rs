@@ -29,8 +29,12 @@ impl TranslationTable {
             if range.start > input {
                 return input;
             }
-            if input >= range.start && input < range.start + range.amount
-            {// 50 60 1, means 50 transforms to 60, but 51 stays 51
+            if input >= range.start && input < range.start + (range.amount -1)
+            {
+                //examples:
+                // 50 60 1, means 50 transforms to 60, but 51 stays 51
+                // 50 60 0, means no transformation (0 transforamtion).
+                // 50 60 2 meanse 50 & 51 can transform to 60 & 61
                 let mut output: u64 = input - range.start;
                 output += range.map;
                 return output;
