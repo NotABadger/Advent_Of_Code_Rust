@@ -15,13 +15,19 @@ fn main() {
     //sort all translation tables by start number for faster look-up.
     translation_tables.iter_mut().for_each(|
             table: &mut TranslationTable | table.list.sort_by(
-                | element, element2 | element.start.cmp(&element2.start)));
+                | element, element2 | element.from.cmp(&element2.from)));
 
     let mut working_trans_table = translation_tables.iter().find(
         |trans_table | trans_table.translation_step == TranslationStep::SeedToSoil).unwrap();
     for plant in &mut plant_data_list
     {
-        plant.soil_nr = working_trans_table.translate(plant.seed_nr);
+        for result in working_trans_table.translate_range(plant.seed_nr).iter().enumerate()
+        {
+            //fill 0'th in original plant,
+            //create more plants with new ranges
+            //append new plant to plant_data_list :)
+        }
+        
     }
 
     working_trans_table = translation_tables.iter().find(

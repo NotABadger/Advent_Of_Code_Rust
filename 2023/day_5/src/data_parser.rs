@@ -16,13 +16,28 @@ pub fn parse_data_from_file_content(file_content: &str, seeds_list: &mut Vec<Pla
         }
         if line.starts_with("seeds:")
         {
+            let mut selected_start_nr: bool = true;
+            let mut start_nr: u64 = 0;
             for number_str in line.split_whitespace()
             {
-                match number_str.parse::<u64>()
+                if selected_start_nr 
                 {
-                    Ok(seed_nr) => seeds_list.push(PlantData::new(seed_nr)),
-                    Err(_) => continue,
+                    match number_str.parse::<u64>()
+                    {
+                        Ok(seed_nr) => start_nr = seed_nr,
+                        Err(_) => continue,
+                    }
+                    selected_start_nr = false;
                 }
+                else {
+                    match number_str.parse::<u64>()
+                    {
+                        Ok(range) => seeds_list.push(PlantData::new(start_nr..(start_nr + range))),
+                        Err(_) => continue,
+                    }
+                    selected_start_nr = true;
+                }
+                
             }
             continue;
         }
@@ -76,16 +91,16 @@ pub fn parse_data_from_file_content(file_content: &str, seeds_list: &mut Vec<Pla
             continue;
         }
 
-        let mut trans_range: TranslationRange = TranslationRange{start: 0, map: 0, amount: 0};
+        let mut trans_range: TranslationRange = TranslationRange{from: 0, to: 0, amount: 0, from_range: 0..0, to_range: 0..0};
         for (index, number_str) in line.split_whitespace().enumerate()
         {
             match index
             {
                 0 => {
-                    trans_range.map = number_str.parse::<u64>().unwrap();
+                    trans_range.to = number_str.parse::<u64>().unwrap();
                 },
                 1 => {
-                    trans_range.start = number_str.parse::<u64>().unwrap();
+                    trans_range.from = number_str.parse::<u64>().unwrap();
                 },
                 2 => {
                     trans_range.amount = number_str.parse::<u64>().unwrap();
@@ -93,6 +108,7 @@ pub fn parse_data_from_file_content(file_content: &str, seeds_list: &mut Vec<Pla
                 _ => println!("Well... this is a problem, I was expecting a number string"),
             }
         }
+        trans_range.calculate_range();
         current_map.list.push(trans_range);
     }
     return_value
