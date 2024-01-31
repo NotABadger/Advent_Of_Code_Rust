@@ -1,6 +1,6 @@
 use crate::effect_trait::*;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Attack {
     damage: i32,
     rounds_active: i32,

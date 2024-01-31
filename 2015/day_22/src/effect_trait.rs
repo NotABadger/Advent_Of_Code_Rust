@@ -1,4 +1,6 @@
-pub trait Effect {
+use std::fmt::Debug;
+
+pub trait Effect: Debug {
     //get damage an effect does
     fn get_dmg(&self) -> i32;
     //get armor an effect gives
