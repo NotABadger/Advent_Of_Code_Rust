@@ -1,13 +1,13 @@
 use crate::char_trait::Character;
 use crate::effect_trait::Effect;
-use crate::attack::Attack;
+
 
 #[derive(Debug)]
 pub struct Enemy{
     name: String,
     max_hp: i32,
     current_hp: i32,
-    attack: Attack,
+    attack_damage: i32,
     armor: i32,
     effects: Vec<Box<dyn Effect>>,
 }
@@ -16,7 +16,13 @@ impl Enemy {
       //create instance
       pub fn new() -> Self
       {
-          Enemy{name: "Boss".to_string(), max_hp: 51 , current_hp: 51, attack: Attack::new(9),  armor: 0,  effects: Vec::new() }
+          Enemy{ name: "Boss".to_string(), 
+                    max_hp: 51 , 
+                    current_hp: 51, 
+                    attack_damage: 9,  
+                    armor: 0,  
+                    effects: Vec::new()
+                }
       }
 }
 
@@ -34,9 +40,9 @@ impl Character for Enemy {
     }
 
     //character attacks, returns damage done
-    fn attack(&mut self) -> Option<Box<dyn Effect>>
+    fn attack(&mut self, enemy: &mut impl Character)
     {
-        Some(Box::new(self.attack.clone()))
+        _ = enemy.take_damage(self.attack_damage);
     }
 
     //take damage, return remaining hp
@@ -52,23 +58,32 @@ impl Character for Enemy {
         self.effects.push(effect);
     }
 
+    //retrieve list with all active effects
+    fn get_active_effects(&self) -> &Vec<Box<dyn Effect>>
+    {
+        &self.effects
+    }
+
     //execute all effects, and clean the ones that are expired
     fn execute_effects(&mut self)
     {
         self.armor = 0;
-        for effect in &mut self.effects
+        if self.effects.len() > 1
         {
-            self.armor = self.armor + effect.get_armor();
-            self.current_hp -= effect.get_dmg();
-            self.current_hp += effect.get_healing();
-            effect.deduct_rounds_active();
-        }
-
-        for index in self.effects.len()-1 ..=0
-        {
-            if self.effects[index].get_rounds_active() < 1
+            for effect in &mut self.effects
             {
-                self.effects.remove(index);
+                self.armor = self.armor + effect.get_armor();
+                self.current_hp -= effect.get_dmg();
+                self.current_hp += effect.get_healing();
+                effect.deduct_rounds_active();
+            }
+
+            for index in self.effects.len()-1 ..=0
+            {
+                if self.effects[index].get_rounds_active() < 1
+                {
+                    self.effects.remove(index);
+                }
             }
         }
     }

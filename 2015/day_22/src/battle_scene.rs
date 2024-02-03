@@ -12,23 +12,31 @@ pub fn fight_battle(player: &mut impl Character,  boss: &mut impl Character) -> 
     {
         current_round += 1;
         player.execute_effects();
-        match player.attack() {
-            Some(effect) => boss.add_effect(effect),
-            None => (),
-        }
-
         boss.execute_effects();
+
         if !boss.check_alive()
-        {//boss died;
+        {
+            println!("The Wizard won!");
             break;
         }
-        let boss_attack = boss.attack().unwrap();
-        if player.take_damage(boss_attack.get_dmg()) < 1
-        {//player died
+        if !player.check_alive()
+        {
+            println!("The Boss won!");
             break;
         }
 
-        
+        player.attack(boss);
+        if !boss.check_alive()
+        {
+            println!("The Wizard won!");
+            break;
+        }
+        boss.attack(player);
+        if !player.check_alive()
+        {
+            println!("The Boss won!");
+            break;
+        }
     }
 
     current_round

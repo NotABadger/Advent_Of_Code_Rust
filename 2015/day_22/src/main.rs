@@ -3,10 +3,9 @@ mod char_trait;
 mod effect_trait;
 mod wizard;
 mod enemy;
-mod attack;
 mod battle_scene;
+mod spells;
 
-use crate::char_trait::Character;
 use crate::wizard::Wizard;
 use crate::enemy::Enemy;
 
@@ -17,15 +16,9 @@ fn main() {
 
     //fight!
     let rounds_played = battle_scene::fight_battle(&mut player, &mut boss);
-    let winner: & dyn Character;
-    if player.check_alive() 
-    { winner = &player} 
-    else 
-    {winner = &boss}
-    println!("After playing {} rounds, {} won!", rounds_played, winner.get_name());
+    println!("After playing {} rounds.", rounds_played);
 
     /* Remaining todo.
-        Implement all spells
         Implement spell choosing algoritm
         Win battles */
 }
