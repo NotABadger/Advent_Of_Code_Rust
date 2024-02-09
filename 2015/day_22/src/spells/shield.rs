@@ -1,6 +1,6 @@
 use crate::effect_trait::Effect;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Shield{
     name: String,
     lasts_turns: i32,
@@ -18,6 +18,15 @@ impl Effect for Shield {
     //get armor an effect gives
     fn get_armor(&self) -> i32 {
         7
+    }
+    //deduct rounds
+    fn deduct_rounds_active(&mut self) {
+        self.lasts_turns -= 1;
+    }
+    //Copy all values
+    fn deep_copy_effect(&self) -> Box<dyn Effect>
+    {
+        Box::new(Shield::new())
     }
 }
 

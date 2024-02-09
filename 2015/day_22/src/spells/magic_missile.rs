@@ -1,6 +1,6 @@
 use crate::effect_trait::Effect;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct MagicMissile {
     name: String,
 }
@@ -18,6 +18,15 @@ impl Effect for MagicMissile {
     fn get_dmg(&self) -> i32 {
         4
     }    
+    //deduct rounds, but has no active rounds
+    fn deduct_rounds_active(&mut self) {
+        
+    }
+    //Copy all values
+    fn deep_copy_effect(&self) -> Box<dyn Effect>
+    {
+        Box::new(MagicMissile::new())
+    }
 }
 
 impl MagicMissile {

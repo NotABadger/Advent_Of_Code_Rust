@@ -1,6 +1,6 @@
 use crate::effect_trait::Effect;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Drain {
     name: String,
 }
@@ -21,6 +21,15 @@ impl Effect for Drain {
     //get healing an effect does
     fn get_healing(&self) -> i32 {
         2
+    }
+    //deduct rounds, but has no active rounds
+    fn deduct_rounds_active(&mut self) {
+        
+    }
+    //Copy all values
+    fn deep_copy_effect(&self) -> Box<dyn Effect>
+    {
+        Box::new(Drain::new())
     }
 }
 

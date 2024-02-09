@@ -17,7 +17,9 @@ pub struct Wizard {
     current_mana: i32,
     used_mana: i32,
     armor: i32,
-    effects: Vec<Box<dyn Effect>>,
+    spell_list: Vec<Box<dyn Effect>>,
+    active_effects: Vec<Box<dyn Effect>>,
+    next_attack: Option<Box<dyn Effect>>,
     round_nr: i32,
 }
 
@@ -32,16 +34,28 @@ impl Wizard {
                                         current_mana: 500, 
                                         used_mana: 0,
                                         armor: 0,  
-                                        effects: Vec::new(),
+                                        spell_list: Vec::new(),
+                                        active_effects: Vec::new(),
+                                        next_attack: None,
                                         round_nr: 0 };
         
-        ret_val.effects.push(Box::new(Drain::new()));
-        ret_val.effects.push(Box::new(MagicMissile::new()));
-        ret_val.effects.push(Box::new(Poison::new()));
-        ret_val.effects.push(Box::new(Recharge::new()));
-        ret_val.effects.push(Box::new(Shield::new()));
+        ret_val.spell_list.push(Box::new(Drain::new()));
+        ret_val.spell_list.push(Box::new(MagicMissile::new()));
+        ret_val.spell_list.push(Box::new(Poison::new()));
+        ret_val.spell_list.push(Box::new(Recharge::new()));
+        ret_val.spell_list.push(Box::new(Shield::new()));
         
         ret_val
+    }
+
+    pub fn get_spells_list(&self) -> &Vec<Box<dyn Effect>>
+    {
+        &self.spell_list
+    }
+
+    pub fn set_next_attack(&mut self, attack_efffect: &Box<dyn Effect>)
+    {
+        self.next_attack = Some(attack_efffect.deep_copy_effect());
     }
 }
 
@@ -85,24 +99,24 @@ impl Character for Wizard {
     }
 
     //add effect of attack
-    fn add_effect(&mut self, effect: Box<dyn Effect>)
+    fn add_effect(&mut self, effect: &Box<dyn Effect>) 
     {
-        self.effects.push(effect);
-    }
 
+        self.active_effects.push(effect.deep_copy_effect());
+    }
     //retrieve list with all active effects
     fn get_active_effects(&self) -> &Vec<Box<dyn Effect>>
     {
-        &self.effects
+        &self.active_effects
     }
 
     //execute all effects
     fn execute_effects(&mut self)
     {
         self.armor = 0;
-        if self.effects.len() > 1
+        if self.active_effects.len() > 1
         {
-            for effect in &mut self.effects
+            for effect in &mut self.active_effects
             {
                 self.armor = self.armor + effect.get_armor();
                 self.current_hp -= effect.get_dmg();
@@ -111,11 +125,11 @@ impl Character for Wizard {
                 effect.deduct_rounds_active();
             }
 
-            for index in self.effects.len()-1 ..=0
+            for index in self.active_effects.len()-1 ..=0
             {
-                if self.effects[index].get_rounds_active() < 1
+                if self.active_effects[index].get_rounds_active() < 1
                 {
-                    self.effects.remove(index);
+                    self.active_effects.remove(index);
                 }
             }
         }
@@ -131,23 +145,40 @@ impl Character for Wizard {
         }
         ret_val
     }
+
 }
 
-impl Wizard {
-    fn cast_effect_on_enemy(&self, target: &mut impl Character, effect: &Box<dyn Effect>) {
-        if !target.get_active_effects().iter().any(|effect_on_target| effect.get_name() == effect_on_target.get_name())
+impl Clone for Wizard {
+    fn clone(&self) -> Self {
+        let mut spell_list_cpy: Vec<Box<dyn Effect>> = Vec::new();
+        for spell in self.get_spells_list()
         {
-            //effect is not in list
-            effect.
-            if effect.get_rounds_active() > 0
-            {
-
-            }
+            spell_list_cpy.push(spell.deep_copy_effect());
         }
-        else {
-            println!("{} was already in effect on enemy, and thus not cast!", effect.get_name());
+        let mut active_effects_cpy: Vec<Box<dyn Effect>> = Vec::new();
+        for active_effect in self.get_active_effects()
+        {
+            active_effects_cpy.push(active_effect.deep_copy_effect());
+        }
+
+        let next_attack_cpy: Option<Box<dyn Effect>> = match &self.next_attack
+        {
+            Some(effect_box) =>  Some(effect_box.deep_copy_effect()),
+            None => None,
+        };
+
+
+        Self { name: self.get_name(), 
+            default_hp: self.default_hp, 
+            current_hp: self.current_hp, 
+            default_mana: self.default_mana, 
+            current_mana: self.current_mana, 
+            used_mana: self.used_mana, 
+            armor: self.armor, 
+            spell_list: spell_list_cpy, 
+            active_effects: active_effects_cpy, 
+            next_attack: next_attack_cpy, 
+            round_nr: self.round_nr 
         }
     }
 }
-
-

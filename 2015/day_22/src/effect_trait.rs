@@ -28,8 +28,7 @@ pub trait Effect: Debug {
         0
     }
     //deduct 1 round of this effect being active
-    fn deduct_rounds_active(&mut self)
-    {
-        
-    }
+    fn deduct_rounds_active(&mut self);
+    //Copy all values
+    fn deep_copy_effect(&self) -> Box<dyn Effect>;
 }

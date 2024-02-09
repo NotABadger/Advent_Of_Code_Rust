@@ -1,6 +1,6 @@
 use crate::effect_trait::Effect;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Recharge{
     name: String,
     lasts_turns: i32,
@@ -18,6 +18,15 @@ impl Effect for Recharge {
     //get mana an effect gives
     fn get_mana(&self) -> i32 {
         101
+    }
+    //deduct rounds
+    fn deduct_rounds_active(&mut self) {
+        self.lasts_turns -= 1;
+    }
+    //Copy all values
+    fn deep_copy_effect(&self) -> Box<dyn Effect>
+    {
+        Box::new(Recharge::new())
     }
 }
 

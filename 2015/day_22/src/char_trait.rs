@@ -21,7 +21,7 @@ pub trait Character: Debug {
     fn take_damage(&mut self, damage: i32) -> i32;
 
     //add effect of attack
-    fn add_effect(&mut self, effect: Box<dyn Effect>);
+    fn add_effect(&mut self, effect: &Box<dyn Effect>);
 
     //retrieve list with all active effects
     fn get_active_effects(&self) -> &Vec<Box<dyn Effect>>;

@@ -9,7 +9,7 @@ pub struct Enemy{
     current_hp: i32,
     attack_damage: i32,
     armor: i32,
-    effects: Vec<Box<dyn Effect>>,
+    active_effects: Vec<Box<dyn Effect>>,
 }
 
 impl Enemy {
@@ -21,7 +21,7 @@ impl Enemy {
                     current_hp: 51, 
                     attack_damage: 9,  
                     armor: 0,  
-                    effects: Vec::new()
+                    active_effects: Vec::new()
                 }
       }
 }
@@ -53,24 +53,24 @@ impl Character for Enemy {
     }
 
     //add effect of attack
-    fn add_effect(&mut self, effect: Box<dyn Effect>) 
+    fn add_effect(&mut self, effect: &Box<dyn Effect>) 
     {
-        self.effects.push(effect);
+        self.active_effects.push(effect.deep_copy_effect());
     }
 
     //retrieve list with all active effects
     fn get_active_effects(&self) -> &Vec<Box<dyn Effect>>
     {
-        &self.effects
+        &self.active_effects
     }
 
     //execute all effects, and clean the ones that are expired
     fn execute_effects(&mut self)
     {
         self.armor = 0;
-        if self.effects.len() > 1
+        if self.active_effects.len() > 1
         {
-            for effect in &mut self.effects
+            for effect in &mut self.active_effects
             {
                 self.armor = self.armor + effect.get_armor();
                 self.current_hp -= effect.get_dmg();
@@ -78,11 +78,11 @@ impl Character for Enemy {
                 effect.deduct_rounds_active();
             }
 
-            for index in self.effects.len()-1 ..=0
+            for index in self.active_effects.len()-1 ..=0
             {
-                if self.effects[index].get_rounds_active() < 1
+                if self.active_effects[index].get_rounds_active() < 1
                 {
-                    self.effects.remove(index);
+                    self.active_effects.remove(index);
                 }
             }
         }
@@ -100,3 +100,20 @@ impl Character for Enemy {
     }
 }
 
+impl Clone for Enemy {
+    fn clone(&self) -> Self {
+        let mut active_effects_cpy: Vec<Box<dyn Effect>> = Vec::new();
+        for active_effect in self.get_active_effects()
+        {
+            active_effects_cpy.push(active_effect.deep_copy_effect());
+        }
+
+        Self { name: self.get_name(), 
+            max_hp: self.max_hp, 
+            current_hp: self.current_hp, 
+            attack_damage: self.attack_damage, 
+            armor: self.armor, 
+            active_effects: active_effects_cpy 
+        }
+    }
+}
