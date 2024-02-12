@@ -67,7 +67,7 @@ impl TranslationTable {
             }
             if working_range.start < translation_range.from_range.start && 
             (working_range.end > translation_range.from_range.start && working_range.end < translation_range.from_range.end)
-            {//start point is too low, up to this range
+            {//start point is too low, up to this range -> AM WORKING HERE
                 let mut ret_rang = working_range.start..translation_range.from_range.start;
                 ret_rang_list.push(working_range);
                 working_range.start = translation_range.from_range.start;

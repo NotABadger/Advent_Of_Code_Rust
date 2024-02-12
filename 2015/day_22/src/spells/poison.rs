@@ -2,14 +2,13 @@ use crate::effect_trait::Effect;
 
 #[derive(Debug, Clone)]
 pub struct Poison{
-    name: String,
     lasts_turns: i32,
 }
 
 impl Effect for Poison { 
     //get name of spell
     fn get_name(&self) -> String {
-        self.name.clone()
+        Self::NAME.to_string()
     }
     //get mana cost of the effect
     fn get_cost(&self) -> i32 {
@@ -23,6 +22,10 @@ impl Effect for Poison {
     fn deduct_rounds_active(&mut self) {
         self.lasts_turns -= 1;
     }
+    //Check how many rounds this effect is active
+    fn get_rounds_active(&self) -> i32 {
+        self.lasts_turns
+    }
     //Copy all values
     fn deep_copy_effect(&self) -> Box<dyn Effect>
     {
@@ -31,10 +34,10 @@ impl Effect for Poison {
 }
 
 impl Poison {
+    pub const NAME: &'static str = "Poison";
     const LASTS_TURNS: i32 = 3;
-    const NAME: &str = "Poison";
     
     pub fn new() -> Self {
-        Self{name: Self::NAME.to_string(), lasts_turns: Self::LASTS_TURNS}
+        Self{lasts_turns: Self::LASTS_TURNS}
     }
 }

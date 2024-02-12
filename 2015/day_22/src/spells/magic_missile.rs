@@ -2,13 +2,12 @@ use crate::effect_trait::Effect;
 
 #[derive(Debug, Clone)]
 pub struct MagicMissile {
-    name: String,
 }
 
 impl Effect for MagicMissile {
-     //get name of spell
-     fn get_name(&self) -> String {
-        self.name.clone()
+    //get name of spell
+    fn get_name(&self) -> String {
+        Self::NAME.to_string()
     }
     //get mana cost of the effect
     fn get_cost(&self) -> i32 {
@@ -30,9 +29,9 @@ impl Effect for MagicMissile {
 }
 
 impl MagicMissile {
-    const NAME: &str = "Magic Missile";
+    pub const NAME: &'static str = "Magic Missile";
 
     pub fn new() -> Self {
-        Self{name: Self::NAME.to_string()}
+        Self{}
     }
 }

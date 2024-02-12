@@ -2,13 +2,12 @@ use crate::effect_trait::Effect;
 
 #[derive(Debug, Clone)]
 pub struct Drain {
-    name: String,
 }
 
 impl Effect for Drain {
     //get name of spell
     fn get_name(&self) -> String {
-        self.name.clone()
+        Self::NAME.to_string()
     }
     //get mana cost of the effect
     fn get_cost(&self) -> i32 {
@@ -34,9 +33,9 @@ impl Effect for Drain {
 }
 
 impl Drain {
-    const NAME: &str = "Drain";
+    pub const NAME: &'static str = "Drain";
 
     pub fn new() -> Self {
-        Self{name: Self::NAME.to_string()}
+        Self{}
     }
 }

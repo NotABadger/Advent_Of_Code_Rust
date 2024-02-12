@@ -15,7 +15,7 @@ pub struct Wizard {
     current_hp: i32,
     default_mana: i32,
     current_mana: i32,
-    used_mana: i32,
+    spent_mana: i32,
     armor: i32,
     spell_list: Vec<Box<dyn Effect>>,
     active_effects: Vec<Box<dyn Effect>>,
@@ -32,7 +32,7 @@ impl Wizard {
                                         current_hp: 50, 
                                         default_mana: 500, 
                                         current_mana: 500, 
-                                        used_mana: 0,
+                                        spent_mana: 0,
                                         armor: 0,  
                                         spell_list: Vec::new(),
                                         active_effects: Vec::new(),
@@ -57,6 +57,16 @@ impl Wizard {
     {
         self.next_attack = Some(attack_efffect.deep_copy_effect());
     }
+
+    pub fn get_current_mana(&self) -> i32
+    {
+        self.current_mana
+    }
+
+    pub fn get_spent_mana(&self) -> i32
+    {
+        self.spent_mana
+    }
 }
 
 impl Character for Wizard {
@@ -65,7 +75,7 @@ impl Character for Wizard {
     {
         self.current_hp = self.default_hp;
         self.current_hp = self.default_mana;
-        self.used_mana = 0;
+        self.spent_mana = 0;
     }
     
     //print name string
@@ -77,33 +87,57 @@ impl Character for Wizard {
     //character attacks, returns damage done
     fn attack(&mut self, enemy: &mut impl Character)
     {
-        //_ = enemy.take_damage(9);
-        self.round_nr += 1;
-        match self.round_nr {
-            1 => {
-                println!("Came to round {}, but we have no more plan. \n {} mana used", self.round_nr, self.used_mana);
-            },
-            _ =>  println!("Came to round {}, but we have no more plan. \n {} mana used", self.round_nr, self.used_mana),
+        assert!(self.next_attack.is_some(), "No next attack was selected for the Wizard");
+
+        let attack_unwrapped: Box<dyn Effect> = self.next_attack.as_ref().unwrap().deep_copy_effect();
+        assert!(self.current_mana > attack_unwrapped.get_cost(), "Mana cost is too high for selected next spell");
+
+        self.current_mana -= attack_unwrapped.get_cost();
+        self.spent_mana += attack_unwrapped.get_cost();
+
+        if attack_unwrapped.get_rounds_active() == 0
+        {
+            self.current_hp += attack_unwrapped.get_healing();
+            self.current_mana += attack_unwrapped.get_mana();
+            self.armor += attack_unwrapped.get_armor();
+            enemy.take_damage(attack_unwrapped.get_dmg());
         }
-        //todo!("shit ton big algorithm...");
-        //use Character.take_dmg and add_effect
-        //or apply to self
-        //every spell must consume mana
+        else {
+            match attack_unwrapped.get_name().as_str()
+            {
+                Poison::NAME => {
+                    enemy.add_effect(&attack_unwrapped);
+                },
+                Recharge::NAME => {
+                    self.add_effect(&attack_unwrapped);
+                },
+                Shield::NAME => {
+                    self.add_effect(&attack_unwrapped);
+                },
+                _ => panic!("Don't know this spell...."),
+            }
+        }
+        self.next_attack = None;
     }
 
     //take damage, return remaining hp
     fn take_damage(&mut self, damage: i32) -> i32
     {
-        self.current_hp -= damage;
+        let mut dmg_taken: i32 = damage - self.armor;
+        if dmg_taken < 1
+        {
+            dmg_taken = 1;
+        }
+        self.current_hp -= dmg_taken;
         self.current_hp
     }
 
     //add effect of attack
     fn add_effect(&mut self, effect: &Box<dyn Effect>) 
     {
-
         self.active_effects.push(effect.deep_copy_effect());
     }
+
     //retrieve list with all active effects
     fn get_active_effects(&self) -> &Vec<Box<dyn Effect>>
     {
@@ -173,7 +207,7 @@ impl Clone for Wizard {
             current_hp: self.current_hp, 
             default_mana: self.default_mana, 
             current_mana: self.current_mana, 
-            used_mana: self.used_mana, 
+            spent_mana: self.spent_mana, 
             armor: self.armor, 
             spell_list: spell_list_cpy, 
             active_effects: active_effects_cpy, 
