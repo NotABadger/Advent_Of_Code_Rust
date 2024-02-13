@@ -11,11 +11,22 @@ use crate::battle_scene::RoundResult;
 
 
 fn main() {
+    // ALGORITHM:
+    // create scenario's. (Pick any spell)
+    // Add to next-to-play-list.
+    // Copy next-to-play-list. to current-playing-list
+    // For each Scenario, start thread with a list index and spell to prepare
+    // if Wizard does not survive turn, delete/do not add to next-to-play-list
+    // if bad guy is dead -> Add mana used and spells played to fight-done-list
+    // if Wizard survives turn & bad guy alive -> add for each spell option to next-to-play-list
+    // Loop back to "copy step" 
+    // Note: 833 is too low! 
+
     println!("Starting battle wizards");
     let mut current_round: Vec<BattleScene> = Vec::new();
     let mut next_round: Vec<BattleScene> = Vec::new();
     let first_battle_scene: BattleScene = BattleScene::new();
-    let mut finished_battles: Vec<(i32,i32)> = Vec::new();
+    let mut finished_battles: Vec<i32> = Vec::new();
 
     let mut first_win_in: bool = false; //mark first win
 
@@ -34,28 +45,19 @@ fn main() {
                         _ => (),
                     }
                 },
-                RoundResult::BossWin(_rounds_until_loss) => {
-                    //println!("A player bit the dust after {} rounds...", rounds_until_loss);
-                },
-                RoundResult::PlayerWin(round_until_win, mana_spent) => {
-                    //println!("Whoop whoop, winner winner chicken dinner! after {} rounds and spending {} mana!", round_until_win, mana_spent);
+                RoundResult::BossWin => (),
+                RoundResult::PlayerWin(mana_spent) => {
                     first_win_in = true;
-                    finished_battles.push((round_until_win, mana_spent));
+                    finished_battles.push(mana_spent);
                 }
             }
         }
 
-
-        /*
-            current_round = next_round;
-            next_round = Vec::new();
-            will go on forever. So let's build in a filter (stopped it at 2.553.626 scenarios...)
-         */
         if first_win_in {
-            finished_battles.sort_by(|win1, win2| win2.1.cmp(&win1.1));
-            let lowest_cost_win = finished_battles.first().unwrap();
+            let mut lowest_mana_used: i32 = 9999;
+            finished_battles.iter().for_each(|element: &i32 | if (*element) < lowest_mana_used {lowest_mana_used = *element} );
             current_round = Vec::new();
-            for battlerscene in  next_round.iter().filter(|element | element.get_mana_spent_in_battle() <= lowest_cost_win.1)
+            for battlerscene in  next_round.iter().filter(|element | element.get_mana_spent_in_battle() < lowest_mana_used)
             {
                 current_round.push(battlerscene.clone());
             }
@@ -64,21 +66,8 @@ fn main() {
             current_round = next_round;
         }
         next_round = Vec::new();
-        
-
     }
 
-    finished_battles.sort_by(|win1, win2| win2.1.cmp(&win1.1));
-    // println!("We have {} won battles", finished_battles.len());
-    // println!("{:#?}", finished_battles);
-    // create scenario's. (Pick any spell)
-    // Add to next-to-play-list.
-    // Copy next-to-play-list. to current-playing-list
-    // For each Scenario, start thread with a list index and spell to prepare
-    // if Wizard does not survive turn, delete/do not add to next-to-play-list
-    // if bad guy is dead -> Add mana used and spells played to fight-done-list
-    // if Wizard survives turn & bad guy alive -> add for each spell option to next-to-play-list
-    // Loop back to "copy step" 
-    //1031 is too high!
-    
+    finished_battles.sort_by(|win1, win2| win1.cmp(&win2));
+    println!("Round won with least mana spent being: {}", finished_battles.first().unwrap());  
 }

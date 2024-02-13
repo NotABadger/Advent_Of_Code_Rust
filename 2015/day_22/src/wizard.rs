@@ -11,33 +11,31 @@ use shield::Shield;
 #[derive(Debug)]
 pub struct Wizard {
     name: String,
-    default_hp: i32,
     current_hp: i32,
-    default_mana: i32,
     current_mana: i32,
     spent_mana: i32,
     armor: i32,
     spell_list: Vec<Box<dyn Effect>>,
     active_effects: Vec<Box<dyn Effect>>,
     next_attack: Option<Box<dyn Effect>>,
-    round_nr: i32,
 }
 
 impl Wizard {
+    const START_HP: i32 = 49;
+    const START_MANA: i32 = 500;
+    const NAME : &'static str = "Bob the magic wizard";
     //create instance
-    pub fn new(player_name: &str) -> Self
+    pub fn new() -> Self
     {
-        let mut ret_val: Wizard = Wizard{name: player_name.to_string(), 
-                                        default_hp: 50 , 
-                                        current_hp: 50, 
-                                        default_mana: 500, 
-                                        current_mana: 500, 
+        let mut ret_val: Wizard = Wizard{name: Self::NAME.to_string(), 
+                                        current_hp: Self::START_HP, 
+                                        current_mana: Self::START_MANA, 
                                         spent_mana: 0,
                                         armor: 0,  
                                         spell_list: Vec::new(),
                                         active_effects: Vec::new(),
-                                        next_attack: None,
-                                        round_nr: 0 };
+                                        next_attack: None, 
+                                    };
         
         ret_val.spell_list.push(Box::new(Drain::new()));
         ret_val.spell_list.push(Box::new(MagicMissile::new()));
@@ -73,8 +71,8 @@ impl Character for Wizard {
     //reset HP & mana stats of character
     fn reset(&mut self)
     {
-        self.current_hp = self.default_hp;
-        self.current_hp = self.default_mana;
+        self.current_hp = Self::START_HP;
+        self.current_mana = Self::START_MANA;
         self.spent_mana = 0;
     }
     
@@ -99,7 +97,6 @@ impl Character for Wizard {
         {
             self.current_hp += attack_unwrapped.get_healing();
             self.current_mana += attack_unwrapped.get_mana();
-            self.armor += attack_unwrapped.get_armor();
             enemy.take_damage(attack_unwrapped.get_dmg());
         }
         else {
@@ -148,22 +145,25 @@ impl Character for Wizard {
     fn execute_effects(&mut self)
     {
         self.armor = 0;
-        if self.active_effects.len() > 1
+        if !self.active_effects.is_empty()
         {
             for effect in &mut self.active_effects
             {
-                self.armor = self.armor + effect.get_armor();
-                self.current_hp -= effect.get_dmg();
-                self.current_hp += effect.get_healing();
-                self.current_mana += effect.get_mana();
-                effect.deduct_rounds_active();
+                if effect.get_rounds_active() > 0
+                {
+                    self.armor += effect.get_armor();
+                    self.current_hp -= effect.get_dmg();
+                    self.current_hp += effect.get_healing();
+                    self.current_mana += effect.get_mana();
+                    effect.deduct_rounds_active();
+                }
             }
 
-            for index in self.active_effects.len()-1 ..=0
+            for index in (self.active_effects.len()-1)..=0
             {
-                if self.active_effects[index].get_rounds_active() < 1
+                if self.active_effects.get(index).unwrap().get_rounds_active() < 1
                 {
-                    self.active_effects.remove(index);
+                    _ = self.active_effects.remove(index);
                 }
             }
         }
@@ -185,15 +185,10 @@ impl Character for Wizard {
 impl Clone for Wizard {
     fn clone(&self) -> Self {
         let mut spell_list_cpy: Vec<Box<dyn Effect>> = Vec::new();
-        for spell in self.get_spells_list()
-        {
-            spell_list_cpy.push(spell.deep_copy_effect());
-        }
+        self.get_spells_list().iter().for_each(|spell| spell_list_cpy.push(spell.deep_copy_effect()));
+
         let mut active_effects_cpy: Vec<Box<dyn Effect>> = Vec::new();
-        for active_effect in self.get_active_effects()
-        {
-            active_effects_cpy.push(active_effect.deep_copy_effect());
-        }
+        self.get_active_effects().iter().for_each(|active_spell| active_effects_cpy.push(active_spell.deep_copy_effect()));
 
         let next_attack_cpy: Option<Box<dyn Effect>> = match &self.next_attack
         {
@@ -203,16 +198,13 @@ impl Clone for Wizard {
 
 
         Self { name: self.get_name(), 
-            default_hp: self.default_hp, 
             current_hp: self.current_hp, 
-            default_mana: self.default_mana, 
             current_mana: self.current_mana, 
             spent_mana: self.spent_mana, 
             armor: self.armor, 
             spell_list: spell_list_cpy, 
             active_effects: active_effects_cpy, 
             next_attack: next_attack_cpy, 
-            round_nr: self.round_nr 
         }
     }
 }

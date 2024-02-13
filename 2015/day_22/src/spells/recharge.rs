@@ -12,11 +12,11 @@ impl Effect for Recharge {
     }
     //get mana cost of the effect
     fn get_cost(&self) -> i32 {
-        229
+        Self::COST
     }
     //get mana an effect gives
     fn get_mana(&self) -> i32 {
-        101
+        Self::MANA_RETURNED
     }
     //deduct rounds
     fn deduct_rounds_active(&mut self) {
@@ -29,12 +29,16 @@ impl Effect for Recharge {
     //Copy all values
     fn deep_copy_effect(&self) -> Box<dyn Effect>
     {
-        Box::new(Recharge::new())
+        let mut cpy: Self = Recharge::new();
+        cpy.lasts_turns = self.lasts_turns;
+        Box::new(cpy)
     }
 }
 
 impl Recharge {
     pub const NAME: &'static str = "Recharge";
+    const COST: i32 = 229;
+    const MANA_RETURNED: i32 = 101;
     const LASTS_TURNS: i32 = 5;
     
     pub fn new() -> Self {

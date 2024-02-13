@@ -11,12 +11,12 @@ impl Effect for MagicMissile {
     }
     //get mana cost of the effect
     fn get_cost(&self) -> i32 {
-        53
+        Self::COST
     }
     //get damage an effect does
     fn get_dmg(&self) -> i32 {
-        4
-    }    
+        Self::DMG
+    }
     //deduct rounds, but has no active rounds
     fn deduct_rounds_active(&mut self) {
         
@@ -30,7 +30,8 @@ impl Effect for MagicMissile {
 
 impl MagicMissile {
     pub const NAME: &'static str = "Magic Missile";
-
+    const COST: i32 = 53;
+    const DMG: i32 = 4;
     pub fn new() -> Self {
         Self{}
     }

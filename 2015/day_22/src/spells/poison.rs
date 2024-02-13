@@ -12,11 +12,11 @@ impl Effect for Poison {
     }
     //get mana cost of the effect
     fn get_cost(&self) -> i32 {
-        173
+        Self::COST
     }
     //get damage an effect gives
     fn get_dmg(&self) -> i32 {
-        3
+        Self::DMG
     }
     //deduct rounds
     fn deduct_rounds_active(&mut self) {
@@ -29,13 +29,17 @@ impl Effect for Poison {
     //Copy all values
     fn deep_copy_effect(&self) -> Box<dyn Effect>
     {
-        Box::new(Poison::new())
+        let mut cpy: Self = Poison::new();
+        cpy.lasts_turns = self.lasts_turns;
+        Box::new(cpy)
     }
 }
 
 impl Poison {
     pub const NAME: &'static str = "Poison";
-    const LASTS_TURNS: i32 = 3;
+    const COST: i32 = 173;
+    const LASTS_TURNS: i32 = 6;
+    const DMG: i32 = 3;
     
     pub fn new() -> Self {
         Self{lasts_turns: Self::LASTS_TURNS}

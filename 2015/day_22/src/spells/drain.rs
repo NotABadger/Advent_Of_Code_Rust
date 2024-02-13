@@ -11,15 +11,15 @@ impl Effect for Drain {
     }
     //get mana cost of the effect
     fn get_cost(&self) -> i32 {
-        73
+        Self::COST
     }
     //get damage an effect does
     fn get_dmg(&self) -> i32 {
-        2
+        Self::DMG
     }
     //get healing an effect does
     fn get_healing(&self) -> i32 {
-        2
+        Self::HEAL
     }
     //deduct rounds, but has no active rounds
     fn deduct_rounds_active(&mut self) {
@@ -34,6 +34,10 @@ impl Effect for Drain {
 
 impl Drain {
     pub const NAME: &'static str = "Drain";
+    const COST: i32 = 73;
+    const DMG: i32 = 2;
+    const HEAL: i32 = 2;
+    
 
     pub fn new() -> Self {
         Self{}

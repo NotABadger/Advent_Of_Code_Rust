@@ -12,11 +12,11 @@ impl Effect for Shield {
     }
     //get mana cost of the effect
     fn get_cost(&self) -> i32 {
-        113
+        Self::COST
     }
     //get armor an effect gives
     fn get_armor(&self) -> i32 {
-        7
+        Self::ARMOR
     }
     //deduct rounds
     fn deduct_rounds_active(&mut self) {
@@ -29,13 +29,17 @@ impl Effect for Shield {
     //Copy all values
     fn deep_copy_effect(&self) -> Box<dyn Effect>
     {
-        Box::new(Shield::new())
+        let mut cpy: Self = Shield::new();
+        cpy.lasts_turns = self.lasts_turns;
+        Box::new(cpy)
     }
 }
 
 impl Shield {
     pub const NAME: &'static str = "Shield";
+    const COST: i32 = 113;
     const LASTS_TURNS: i32 = 6;
+    const ARMOR: i32 = 7;
     
     pub fn new() -> Self {
         Self{lasts_turns: Self::LASTS_TURNS}
