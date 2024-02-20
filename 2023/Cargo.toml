@@ -2,6 +2,7 @@
 
 members = [
     "input_file_lib",
+    "log_obj_lib",
     "day_1",
     "day_2",
     "day_3",
