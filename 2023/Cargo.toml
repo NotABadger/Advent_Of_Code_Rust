@@ -1,5 +1,4 @@
 [workspace]
-
 members = [
     "input_file_lib",
     "log_obj_lib",
@@ -9,3 +8,4 @@ members = [
     "day_4",
     "day_5",
 ]
+resolver = "2"
