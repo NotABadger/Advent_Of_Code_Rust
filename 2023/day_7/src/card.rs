@@ -5,7 +5,7 @@ pub enum Card {
     ACE = 1,
     KING = 2,
     QUEEN = 3,
-    JACK = 4,
+    JACK = 14,//for part two changed to 14, was 4 in part 1
     TEN = 5,
     NINE = 6,
     EIGHT = 7,
