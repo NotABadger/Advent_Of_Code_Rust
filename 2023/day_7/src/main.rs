@@ -18,6 +18,6 @@ fn main() {
         let hand_score = (index as u64 +1) * hand.bid as u64;
         total_winnigs += hand_score;
     }
-    
+    //list_of_hands.iter().for_each(| i |println!("winnig: {:?}, card: {:?}", i.best_combination, i.cards) ); //Debugging help
     println!("Total winnings: {}", total_winnigs);
 }

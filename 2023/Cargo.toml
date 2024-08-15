@@ -1,15 +1,7 @@
 [workspace]
 members = [
-    "input_file_lib",
-    "log_obj_lib",
-    "threadpool_lib",
-    "day_1",
-    "day_2",
-    "day_3",
-    "day_4",
-    #"day_5",
-    "day_6",
-    "day_7",
-
-]
+    "*_lib",
+    "day_*",
+    ]
+exclude = ["day_5"]
 resolver = "2"
