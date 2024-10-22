@@ -2,10 +2,10 @@ mod node;
 mod part_1;
 mod part_2;
 
+use input_file_lib::read_file_content;
 
 use std::collections::HashMap;
 
-use input_file_lib::read_file_content;
 use node::Node;
 use part_1::part_1;
 use part_2::part_2;

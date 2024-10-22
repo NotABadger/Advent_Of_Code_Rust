@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 input_file_lib ={ path = "../input_file_lib" }
+num = "0.4.3"
+threadpool_lib ={ path = "../threadpool_lib" }

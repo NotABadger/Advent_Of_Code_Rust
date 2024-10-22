@@ -1,97 +1,115 @@
-mod thread_data;
-mod thread_communication;
-mod worker_thread;
-use std::{collections::HashMap, sync::mpsc::channel};
-use crate::{part_2::thread_communication::{MainToWorker, WorkerToMain}, Node};
+mod least_common_multiple;
+use crate::node::Node;
 
-use thread_data::WorkerData;
-
+use::threadpool_lib::initialize_threadpool;
+use std::collections::HashMap;
+use std::sync::Arc;
+use std::sync::Mutex;
 /* Ideas: 
-    1. Thread per found starting node, 2 Channels, 
-        1st for thread -> main thread, sending amount of steps finding Z.
-        2nd for main thread -> unblock or terminate thread
-    node-threads send amount of steps until Z-ending node,
-    the threads disagree and have lowest amount of steps  should continue.
-    either find amount of steps on correct node, or not at all.        
+    // Check amount of steps until ALL 6 are at a node ending in Z
+    // This is a Least-Common-Multiple problem, 
+    // https://en.wikipedia.org/wiki/Least_common_multiple
+    // we will need to see which amount of steps every node needs until it "restarts"
+    // E.G. start node number 1 will need 10 steps to get to Z, then 12, then 24, then 10, and 12, and so on. 
+    // the values will be 12, 24, 10. since 12 will repeat the patern
 */
 pub fn part_2(map: &HashMap<String,Node>, instructions: &Vec<char>)
 {
-    let mut worker_data: Vec<WorkerData> = Vec::new();
     //find how many start points there are
-    let mut working_nodes: Vec<&Node> = Vec::new();
+    let mut starting_nodes: Vec<&Node> = Vec::new();
     map.iter().filter(|(name, _node)| name.ends_with('A'))
-                .for_each(|(_name, node)| working_nodes.push(node));
+                .for_each(|(_name, node)| starting_nodes.push(node));
 
-    println!("found {} starting points.", working_nodes.len()); // finds six starting points
 
-    //initializing worker threads
-    let (to_main_sender, to_main_receiver) = channel::<WorkerToMain>(); //one receiver for all worker threads.
-    for index in 0..working_nodes.len() {
+    println!("found {} starting points.", starting_nodes.len()); // finds six starting points
 
-        let (to_worker_sender, to_worker_receiver) = channel::<MainToWorker>();
-        let worker_map = map.clone();
-        let worker_instructions = instructions.clone();
-        let worker_start_point: String = working_nodes.get(index).unwrap().name.clone();
-        let worker_to_main_sender = to_main_sender.clone();
-        let thread_hand: std::thread::JoinHandle<()> = std::thread::spawn(move || worker_thread::part_2_worker(worker_map, 
-                                                                                                                worker_instructions, 
-                                                                                                                worker_start_point,
-                                                                                        worker_to_main_sender,
-                                                                                        to_worker_receiver));
-        
-        let start_point: String = working_nodes.get(index).unwrap().name.clone();
-        let last_steps_found_init: u32 = 0;
-        worker_data.push(WorkerData { thread_handle: thread_hand, 
-                                        start_point: start_point,
-                                        communication_to_worker: to_worker_sender, 
-                                        last_found_steps: last_steps_found_init,
-                                        waiting_for_answer: false });
+    // execute logic with threadpool
+    let pool = initialize_threadpool();
+    let answers: Arc<Mutex<Vec<u32>>> = Arc::new(Mutex::new(Vec::new()));
+    for startnode in starting_nodes {
+        let thread_answer = answers.clone();
+        let thread_map = map.clone();
+        let thread_instructions = instructions.clone();
+        let start_node_str = startnode.name.clone();
+        pool.execute(move || { thread_answer.lock().unwrap().append(
+            &mut thread_task(thread_map, thread_instructions, start_node_str)
+        );});
     }
-    drop(working_nodes);
-
     
-    let mut highest_steps: u32 = 0;
-    while let Ok(message) = to_main_receiver.recv()
-    {
-        if message.steps < highest_steps
-        {
-            let sender_worker_data: &WorkerData = worker_data.iter().find(|worker| worker.thread_handle.thread().id() == message.thread_id).unwrap();
-            _ = sender_worker_data.communication_to_worker.send(MainToWorker::KeepLooking);
-            continue;
+    pool.join();
+    println!("Executed all tasks.");
+    
+    let multiplication = least_common_multiple::find_least_common_multiplicator(answers.lock().unwrap().clone());
+    println!("Least amount of steps from all {}", multiplication);
+   
+}
+
+pub fn thread_task(map: HashMap<String,Node>, instructions: Vec<char>, start_node: String) -> Vec<u32> {
+    let mut list_of_relative_intervals :Vec<u32> = Vec::new();
+    let mut list_of_absolute_intervals: Vec<u32> = Vec::new();
+
+    let mut working_node: &Node = map.get(&start_node).unwrap();
+    let mut instructions_index: usize = 0;
+    let mut relative_amount_of_steps: u32 = 0;
+    let mut abosulte_amount_of_steps: u32 = 0;
+
+    while !working_node.name.ends_with('Z') {
+        relative_amount_of_steps += 1;
+        abosulte_amount_of_steps += 1;
+        if instructions_index == instructions.len(){
+            instructions_index = 0;
         }
-        if message.steps == highest_steps
-        {
-            let sender_worker_data: &mut WorkerData = worker_data.iter_mut().find(|worker| worker.thread_handle.thread().id() == message.thread_id).unwrap();
-            _ = sender_worker_data.waiting_for_answer = true;
-            //check if all threads are waiting, AKA all at the same amount of steps -> Done!
-            let mut all_done: bool = true;
-            worker_data.iter().for_each(|worker| if worker.waiting_for_answer == false {all_done = false});
-            if all_done {
-                worker_data.iter().for_each(| worker| _ = worker.communication_to_worker.send(MainToWorker::Exit));
-                println!("Exit after finding all steps!");
-                break;
+        match instructions.get(instructions_index).unwrap() {
+            'L' => working_node = map.get(&working_node.left_node).unwrap(),
+            'R' => working_node = map.get(&working_node.right_node).unwrap(),
+            _ => println!("unexplained instruction")
+        }
+        instructions_index += 1;
+        
+    }
+    list_of_absolute_intervals.push(abosulte_amount_of_steps);
+    list_of_relative_intervals.push(relative_amount_of_steps);
+    relative_amount_of_steps = 0;
+
+    'found_all_intervals: loop { 
+        //go to next note after ending with "Z"
+        //Go to next node:
+        relative_amount_of_steps += 1;
+        abosulte_amount_of_steps += 1;
+        if instructions_index == instructions.len(){
+            instructions_index = 0;
+        }
+        match instructions.get(instructions_index).unwrap() {
+            'L' => working_node = map.get(&working_node.left_node).unwrap(),
+            'R' => working_node = map.get(&working_node.right_node).unwrap(),
+            _ => println!("unexplained instruction")
+        }
+        instructions_index += 1;
+        //Continue doing this while not ending in Z
+        while !working_node.name.ends_with('Z') {
+            relative_amount_of_steps += 1;
+            abosulte_amount_of_steps += 1;
+            if instructions_index == instructions.len(){
+                instructions_index = 0;
             }
-
-            continue;
+            match instructions.get(instructions_index).unwrap() {
+                'L' => working_node = map.get(&working_node.left_node).unwrap(),
+                'R' => working_node = map.get(&working_node.right_node).unwrap(),
+                _ => println!("unexplained instruction")
+            }
+            instructions_index += 1;
         }
-        if message.steps > highest_steps
-        {
-            highest_steps = message.steps;
-            println!("Highest steps is now: {}", highest_steps);
-            let sender_worker_data: &mut WorkerData = worker_data.iter_mut().find(|worker| worker.thread_handle.thread().id() == message.thread_id).unwrap();
-            sender_worker_data.waiting_for_answer = true;
-            worker_data.iter_mut().for_each(|worker| {
-                if worker.waiting_for_answer && worker.thread_handle.thread().id() != message.thread_id {
-                    worker.waiting_for_answer = false;
-                    _ = worker.communication_to_worker.send(MainToWorker::KeepLooking);
-                }
-            });
+        //found node ending in Z
+        if relative_amount_of_steps == *list_of_relative_intervals.first().unwrap() {
+            break 'found_all_intervals;
         }
-    }
+        else {
+            relative_amount_of_steps = 0;
+        }
+        //Only add to list if new
+        list_of_absolute_intervals.push(abosulte_amount_of_steps);
+        list_of_relative_intervals.push(relative_amount_of_steps);
+    } 
 
-    for data in worker_data {
-        _ = data.thread_handle.join();
-    }
-
-    //println!("Part 2: found everything ending in Z in {} steps", amount_of_steps);
+    return list_of_relative_intervals;
 }
