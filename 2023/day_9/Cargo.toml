@@ -1,0 +1,8 @@
+[package]
+name = "day_9"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+input_file_lib ={ path = "../input_file_lib" }
+threadpool_lib ={ path = "../threadpool_lib" }
