@@ -1,6 +1,5 @@
 mod oasis_report;
 use input_file_lib::read_file_content;
-use threadpool_lib::initialize_threadpool;
 
 use oasis_report::OasisReport;
 
@@ -18,11 +17,9 @@ fn main() {
         data_list.push(OasisReport::new(vec![data_sample]));
     }
     
-    //let pool = initialize_threadpool();
     let mut sum_future_predictions: i32 = 0;
     let mut sum_past_predictions: i32 = 0;
     for data in &mut data_list {
-        //pool.execute
         sum_future_predictions += data.part1_prediction();
         sum_past_predictions += data.part2_prediction();
     }
