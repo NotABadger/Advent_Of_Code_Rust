@@ -12,7 +12,7 @@ pub fn read_file_content() -> Result<String, Box<dyn std::error::Error>>
             {
                 return Ok(file_reader::read_file(first_parameter)?);
             }
-            return Err("File does not exist".into());
+            Err("File does not exist".into())
         }
         None => {
             Err("could not find any parameter, or parameter file does not exist".into())
