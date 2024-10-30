@@ -4,32 +4,80 @@ use crate::tile::TileType;
 use crate::tile::PipeType;
 use crate::directions::Directions;
 
-pub fn find_furthest_point(start_point: (usize, usize), scan: &Vec<Vec<TileType>>) -> usize {
+pub fn find_furthest_point(start_point: (usize, usize), scan: &Vec<Vec<TileType>>) {
 
     let mut max_steps: usize = 0;
-    if direction_available(start_point, start_point, scan, Directions::North, &mut max_steps) {
-        println!("Found a path heading {:?}, and took me {} distance from the point", Directions::North, max_steps);
+    let mut next_dir:Directions = Directions::North;
+    let mut found_route: bool = false;
+    let mut current_point: (usize, usize) = start_point;
+    for _ in 0..scan.len()*scan.get(0).unwrap().len() {
+        if !travel_route(start_point, &mut current_point, scan, next_dir, &mut next_dir, &mut max_steps, &mut found_route) {
+            break;
+        }
+        
+    }
+    if found_route {
+        println!("Found route going North, max distance was {}", max_steps /2);
+    }
+    else {
+        println!("North was a dead end"); 
+    }
+
+    max_steps = 0;
+    next_dir = Directions::South;
+    found_route = false;
+    current_point = start_point;
+    for _ in 0..scan.len()*scan.get(0).unwrap().len() {
+        if !travel_route(start_point, &mut current_point, scan, next_dir, &mut next_dir, &mut max_steps, &mut found_route) {  
+            break;
+        }//travelin'
+    }
+    if found_route {
+        println!("Found route going South, max distance was {}",( max_steps /2) +1);
+    }
+    else {
+        println!("South was a dead end"); 
     }
     max_steps = 0;
-    if direction_available(start_point, start_point,scan, Directions::South, &mut max_steps) {
-        println!("Found a path heading {:?}, and took me {} distance from the point", Directions::South, max_steps);
+    next_dir = Directions::East;
+    found_route = false;
+    current_point = start_point;
+    for _ in 0..scan.len()*scan.get(0).unwrap().len() {
+        if !travel_route(start_point, &mut current_point, scan, next_dir, &mut next_dir, &mut max_steps, &mut found_route) {
+            break;
+        }
+        //travelin'
+    }
+    if found_route {
+        println!("Found route going East, max distance was {}", ( max_steps /2) +1);
+    }
+    else {
+        println!("East was a dead end"); 
     }
     max_steps = 0;
-    if direction_available(start_point, start_point, scan, Directions::East, &mut max_steps) {
-        println!("Found a path heading {:?}, and took me {} distance from the point", Directions::East, max_steps);
+    next_dir = Directions::West;
+    found_route = false;
+    current_point = start_point;
+    for _ in 0..scan.len()*scan.get(0).unwrap().len() {
+        if !travel_route(start_point, &mut current_point, scan, next_dir, &mut next_dir, &mut max_steps, &mut found_route) {
+            break;
+        }
+        //travelin'
     }
-    max_steps = 0;
-    if direction_available(start_point, start_point, scan, Directions::West, &mut max_steps) {
-        println!("Found a path heading {:?}, and took me {} distance from the point", Directions::West, max_steps);
+    if found_route {
+        println!("Found route going West, max distance was {}", ( max_steps /2) +1);
     }
-    
-    return 0;
+    else {
+        println!("West was a dead end"); 
+    }
 }
 
 
-fn direction_available(start_point: (usize, usize), current_point: (usize, usize), scan: &Vec<Vec<TileType>>, direction: Directions, max_steps: &mut usize) -> bool {
+fn travel_route(start_point: (usize, usize), current_point: &mut (usize, usize), scan: &Vec<Vec<TileType>>, 
+                        direction: Directions, next_direction: &mut Directions, max_steps: &mut usize, 
+                        found_route: &mut bool) -> bool {
     let (mut current_y, mut current_x) = current_point;
-    
+    *found_route = false;
     //are we heading off map?
     match direction {
         Directions::North => if current_y > 0 {current_y -= 1} else {return false},
@@ -42,7 +90,8 @@ fn direction_available(start_point: (usize, usize), current_point: (usize, usize
                                     .get(current_x).expect("we checked bounds");
     match *next_pipe {
         TileType::Ground => return false, //pipe ended
-        TileType::StartPos => return true, //back at start
+        TileType::StartPos =>{ *found_route = true;
+                                 return true}, //back at start
         _ => () //check directions next
     }
     //Checking if we run into a wall
@@ -67,27 +116,23 @@ fn direction_available(start_point: (usize, usize), current_point: (usize, usize
 
     //We are okay to travel!
     //determine new position
-    let mut distance = current_y.abs_diff(start_point.0);
-    distance += current_x.abs_diff(start_point.1);
-    if distance > *max_steps {
-        *max_steps = distance;
-    }
+    *current_point = (current_y, current_x);
+    *max_steps += 1;
     //determine new direction
-    let mut next_direction = Directions::North;
     if let TileType::Pipe(pipe) = next_pipe {
-        next_direction = pipe.determine_outgoing_direction(direction).unwrap();
+        *next_direction = pipe.determine_outgoing_direction(direction).unwrap();
     }
     else {
         panic!("All other pipe types should have been covered before!");
     }
-    dbg!(&direction);
-    dbg!(&next_direction);
-    dbg!(&distance);
-    dbg!(&current_point);
-    dbg!(next_pipe);
+    // dbg!(&direction);
+    // dbg!(&next_direction);
+    // dbg!(&distance);
+    // dbg!(&current_point);
+    // dbg!(next_pipe);
 
 
-    //might run into dead end
-    direction_available(start_point, (current_y, current_x), scan, next_direction, max_steps)
+    //Would love to do recursion, but stack overflow will happen...
+    true
 }
 

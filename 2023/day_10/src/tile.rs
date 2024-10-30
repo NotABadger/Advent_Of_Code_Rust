@@ -1,14 +1,14 @@
 use crate::directions::Directions;
-use crate::error::MyFuckingError;
+use crate::error::MyError;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum TileType {
     Ground,
     Pipe(PipeType),
     StartPos,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum PipeType {
     Vertical,
     Horizontal,
@@ -19,38 +19,38 @@ pub enum PipeType {
 }
 
 impl PipeType {
-    pub fn determine_outgoing_direction(&self, incomming_dir: Directions) -> Result<Directions, MyFuckingError> {
+    pub fn determine_outgoing_direction(&self, incomming_dir: Directions) -> Result<Directions, MyError> {
         match self {
             Self::Vertical => {if incomming_dir != Directions::North && incomming_dir != Directions::South {
-                return Err(MyFuckingError::new("Vertical pipes can only be traveled N <-> S"));
+                return Err(MyError::new("Vertical pipes can only be traveled N <-> S"));
                 }
                 Ok(incomming_dir)
             }
             Self::Horizontal => {if incomming_dir != Directions::West && incomming_dir != Directions::East {
-                return Err(MyFuckingError::new("Horizontal pipes can only be traveled W <-> E"));
+                return Err(MyError::new("Horizontal pipes can only be traveled W <-> E"));
                 }
                 Ok(incomming_dir)
             }
             Self::CornerNE => {if incomming_dir != Directions::South && incomming_dir != Directions::West {
-                return Err(MyFuckingError::new("Corner North-East pipes can only be traveled N <-> E"));
+                return Err(MyError::new("Corner North-East pipes can only be traveled N <-> E"));
                 }
                 if incomming_dir == Directions::South {return Ok(Directions::East);}
                 Ok(Directions::North)
             }
             Self::CornerSE => {if incomming_dir != Directions::North && incomming_dir != Directions::West {
-                return Err(MyFuckingError::new("Corner South-East pipes can only be traveled S <-> E"));
+                return Err(MyError::new("Corner South-East pipes can only be traveled S <-> E"));
                 }
                 if incomming_dir == Directions::North {return Ok(Directions::East);}
                 Ok(Directions::South)
             }
             Self::CornerNW => {if incomming_dir != Directions::South && incomming_dir != Directions::East {
-                return Err(MyFuckingError::new("Corner North-West pipes can only be traveled N <-> W"));
+                return Err(MyError::new("Corner North-West pipes can only be traveled N <-> W"));
                 }
                 if incomming_dir == Directions::South {return Ok(Directions::West);}
                 Ok(Directions::North)
             }
             Self::CornerSW => {if incomming_dir != Directions::North && incomming_dir != Directions::East {
-                return Err(MyFuckingError::new("Corner South-West pipes can only be traveled S <-> W"));
+                return Err(MyError::new("Corner South-West pipes can only be traveled S <-> W"));
                 }
                 if incomming_dir == Directions::North {return Ok(Directions::West);}
                 Ok(Directions::South)

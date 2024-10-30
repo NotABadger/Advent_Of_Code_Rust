@@ -1,7 +1,8 @@
 mod tile;
 mod directions;
-mod part1;
 mod error;
+mod part1;
+mod part2;
 
 use input_file_lib::read_file_content;
 use tile::TileType;
@@ -31,6 +32,8 @@ fn main() {
                     .position(|point| point == &TileType::StartPos).unwrap();
     //start point initialized.
     //scan in 2D vec available, and start point known
-    _ = find_furthest_point(start_point, &ground_scan);
-
+    println!("PART 1");
+    find_furthest_point(start_point, &ground_scan);
+    println!("PART 2");
+    part2::part2(start_point, &ground_scan); //Last try was 471, but was too high!
 }
