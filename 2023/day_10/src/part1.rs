@@ -11,7 +11,7 @@ pub fn find_furthest_point(start_point: (usize, usize), scan: &Vec<Vec<TileType>
     let mut found_route: bool = false;
     let mut current_point: (usize, usize) = start_point;
     for _ in 0..scan.len()*scan.get(0).unwrap().len() {
-        if !travel_route(start_point, &mut current_point, scan, next_dir, &mut next_dir, &mut max_steps, &mut found_route) {
+        if !travel_route(&mut current_point, scan, next_dir, &mut next_dir, &mut max_steps, &mut found_route) {
             break;
         }
         
@@ -28,7 +28,7 @@ pub fn find_furthest_point(start_point: (usize, usize), scan: &Vec<Vec<TileType>
     found_route = false;
     current_point = start_point;
     for _ in 0..scan.len()*scan.get(0).unwrap().len() {
-        if !travel_route(start_point, &mut current_point, scan, next_dir, &mut next_dir, &mut max_steps, &mut found_route) {  
+        if !travel_route(&mut current_point, scan, next_dir, &mut next_dir, &mut max_steps, &mut found_route) {  
             break;
         }//travelin'
     }
@@ -43,7 +43,7 @@ pub fn find_furthest_point(start_point: (usize, usize), scan: &Vec<Vec<TileType>
     found_route = false;
     current_point = start_point;
     for _ in 0..scan.len()*scan.get(0).unwrap().len() {
-        if !travel_route(start_point, &mut current_point, scan, next_dir, &mut next_dir, &mut max_steps, &mut found_route) {
+        if !travel_route(&mut current_point, scan, next_dir, &mut next_dir, &mut max_steps, &mut found_route) {
             break;
         }
         //travelin'
@@ -59,7 +59,7 @@ pub fn find_furthest_point(start_point: (usize, usize), scan: &Vec<Vec<TileType>
     found_route = false;
     current_point = start_point;
     for _ in 0..scan.len()*scan.get(0).unwrap().len() {
-        if !travel_route(start_point, &mut current_point, scan, next_dir, &mut next_dir, &mut max_steps, &mut found_route) {
+        if !travel_route(&mut current_point, scan, next_dir, &mut next_dir, &mut max_steps, &mut found_route) {
             break;
         }
         //travelin'
@@ -73,7 +73,7 @@ pub fn find_furthest_point(start_point: (usize, usize), scan: &Vec<Vec<TileType>
 }
 
 
-fn travel_route(start_point: (usize, usize), current_point: &mut (usize, usize), scan: &Vec<Vec<TileType>>, 
+fn travel_route(current_point: &mut (usize, usize), scan: &Vec<Vec<TileType>>, 
                         direction: Directions, next_direction: &mut Directions, max_steps: &mut usize, 
                         found_route: &mut bool) -> bool {
     let (mut current_y, mut current_x) = current_point;

@@ -16,18 +16,6 @@ impl Universe {
     pub const EMPTY : char = '.';
     pub const GALAXY : char = '#';
 
-    pub fn get_orig_height(&self) -> usize {
-        self.original_height
-    }
-    pub fn get_orig_width(&self) -> usize {
-        self.original_width
-    }
-    pub fn get_expand_height(&self) -> usize {
-        self.expanded_height
-    }
-    pub fn get_expand_width(&self) -> usize {
-        self.expanded_width
-    }
     pub fn get_origi_uni(&self) -> &HashMap<(usize, usize), char> {
         &self.universe_original
     }

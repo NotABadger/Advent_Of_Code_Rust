@@ -1,6 +1,5 @@
 pub use crate::tile::TileType;
 pub use crate::tile::PipeType;
-use crate::error::MyError;
 
 #[derive(Debug)]
 pub struct Tile {
@@ -24,8 +23,5 @@ impl Tile {
     }
     pub fn set_inside_shape(&mut self) {
         self.inside_shape = true;
-    }
-    pub fn get_inside_shape(&self) -> bool {
-        self.inside_shape
     }
 }
