@@ -1,0 +1,8 @@
+[package]
+name = "day_12"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+input_file_lib = { version = "0.1.0", path = "../input_file_lib" }
+error_type_lib = { version = "0.1.0", path = "../error_type_lib" }
