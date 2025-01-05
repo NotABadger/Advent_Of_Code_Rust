@@ -26,11 +26,7 @@ impl Component for NGate
     
     fn validate_component(&self) -> bool
     {
-        if !self.input.is_none()
-        {
-            return true;
-        }
-        false
+        !self.input.is_none()
     }
 
     fn compute_value(&mut self) -> u16

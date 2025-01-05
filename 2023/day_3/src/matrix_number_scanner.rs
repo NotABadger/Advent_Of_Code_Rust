@@ -24,7 +24,6 @@ pub fn total_matrix_value(matrix: &Vec<Vec<char>>, size: (usize, usize)) -> u32
                         total_value += number_str.parse::<u32>().unwrap();
                     }
                 }
-                
             }
             else { 
                 //reset algorithm
