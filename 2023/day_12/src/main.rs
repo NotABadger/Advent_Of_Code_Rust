@@ -1,5 +1,6 @@
 mod springs_row;
 mod spring_state;
+mod part_1;
 
 use std::error::Error;
 
@@ -11,6 +12,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("day_12 program");
     let file_content: String = read_file_content()?;
     let spring_rows: Vec<SpringsRow> = parse_file_to_list(&file_content)?;
+    let spring_test: SpringsRow = SpringsRow::new("#.#.###", "1,1,3").unwrap();
+    println!("{:?}", &spring_test);
+    if spring_test.verify_row_correctness_self() {
+        println!("this works!");
+    }
     //Algorithm:
     // only thing to modify are unknowns states/springs
     // Get current row Check first arrangment
